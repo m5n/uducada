@@ -1,10 +1,26 @@
 #!/bin/sh
 
-# Currently using UglifyJS for minification: https://github.com/mishoo/UglifyJS
-# To use it, install Node.js (http://nodejs.org/) and run "npm install uglify-js"
-# Thanks http://stackoverflow.com/a/5349538
+# Capture the current version.
+VERSION=`cat ./VERSION`
 
-UGLIFYJS=../node_modules/uglify-js/bin/uglifyjs
+# Currently using YUI Compressor for minification.  To use it, install Java (http://java.com/)
+# and download the YUI compressor (http://yuilibrary.com/download/yuicompressor/).
+YUICOMPRESSOR=../yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar
 
-cat ./src/*.js > ./uducada.js
-$UGLIFYJS -o ./uducada.min.js ./uducada.js
+# Output tmp version file (use comment style that works for both CSS and JS).
+echo "/* uducada v$VERSION - https://github.com/m5n/uducada */\n" > ./version.tmp
+
+# Add the version file to the minified and unminified versions of the CSS file.
+cat ./src/*.css > ./uducada.css.tmp
+java -jar $YUICOMPRESSOR --type css -o ./uducada.min.css.tmp ./uducada.css.tmp
+cat ./version.tmp ./uducada.css.tmp > ./uducada.css
+cat ./version.tmp ./uducada.min.css.tmp > ./uducada.min.css
+
+# Add the version file to the minified and unminified versions of the JS file.
+cat ./src/*.js > ./uducada.js.tmp
+java -jar $YUICOMPRESSOR --type js -o ./uducada.min.js.tmp ./uducada.js.tmp
+cat ./version.tmp ./uducada.js.tmp > ./uducada.js
+cat ./version.tmp ./uducada.min.js.tmp > ./uducada.min.js
+
+# Delete all tmp files.
+rm ./*.tmp

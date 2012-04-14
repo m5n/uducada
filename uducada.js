@@ -1,38 +1,62 @@
+/* uducada v0.1 - https://github.com/m5n/uducada */
+
 // uducada - dialog - https://github.com/m5n/uducada
 
-/*global $ */
-(function () {
+/*global jQuery */
+(function ($) {
     'use strict';
 
-    // Trigger cancel event when Escape button is pressed or X is clicked.
-    function triggerCancelEvent(event) {
-        if ($(event.srcElement).hasClass('ui-icon-closethick') ||
-                event.keyCode === $.ui.keyCode.ESCAPE) {
-            $(event.target).trigger('dialog-button-cancel');
+    // Trigger a specific button event, making the type easily accessible.
+    function triggerEvent(element, type) {
+        element.trigger('button:' + type, [ type ]);
+    }
+
+    // Trigger cancel event for non-button actions if needed.
+    function maybeTriggerCancelEvent(event) {
+        if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // The "X" icon at top-right.
+                event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
+            triggerEvent($(event.target), 'cancel');
         }
     }
 
-    $('.dialog').each(function () {
-        var elt = $(this),
-            buttonsData,
-            buttons = {};
+    // TODO: after closing dialog, pressing Esc or Enter or Space triggers
+    //       another event, at least in Safari... jQuery UI bug?
 
-        // Generate custom button events.
-        buttonsData = elt.data('dialog-buttons');
-        if (buttonsData) {
-            $.each(buttonsData.split(','), function (index, value) {
-                buttons[value] = function () {
-                    elt.trigger('dialog-button-' + value);
-                };
+    // Initialize all dialogs present in the markup.
+    $('.dialog').each(function () {
+        var element = $(this),
+            buttonData,
+            buttonConfig = [];
+
+        // Process buttons, if any.
+        buttonData = element.data('buttons');
+        if (buttonData) {
+            // Generate buttons config.
+            $.each(buttonData.split(','), function (index, value) {
+                // The "value" variable has the format "event:text".
+                var buttonOptions = value.split(':');
+
+                buttonConfig.push({
+                    text: buttonOptions[1],
+                    click: function () {
+                        triggerEvent(element, buttonOptions[0]);
+                    }
+                });
             });
         }
 
-        elt.dialog({
-            modal: elt.data('dialog-ismodal'),
-            title: elt.data('dialog-title'),
-            buttons: buttons,
-            close: triggerCancelEvent
+        // Init the dialog.
+        // TODO: add on-demand / delayed init.
+        element.dialog({
+            autoOpen: false,   // Since this is a global init, must be false.
+            buttons: buttonConfig,
+            close: maybeTriggerCancelEvent,
+            dialogClass: 'uducada-dialog' +   // TODO: remove if this class is never used.
+                (element.hasClass('hide-x-icon') ? ' uducada-hide-x-icon' : ''),
+            modal: element.data('modal'),
+            title: element.data('title'),
+            width: element.data('width')
         });
     });
-}());
+}(jQuery));
 

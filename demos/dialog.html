@@ -3,34 +3,111 @@
 <head>
 <meta charset="utf-8">
 <title>Dialog Demo</title>
-<link href="../3pty/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<link href="../3pty/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+<link href="../src/dialog.css" rel="stylesheet" type="text/css" />
+<style>
+
+
+/* Only needed for this demo; ignore this. */
+#demo-controls {
+    border: 1px solid black;
+    margin: 1em;
+    padding: 1em;
+}
+#demo-controls #console {
+    margin-top: 1em;
+}
+#demo-controls #console-output-template {
+    display: none;
+}
+
+
+</style>
 </head>
 <body>
 
+
+<!-- Basic no-button dialog. -->
+<!-- Note: the "id" attribute is only needed to reference this specific dialog later. -->
+<!-- Note: use data-title instead of jQuery UI's title attribute. -->
 <div class="dialog"
-     data-dialog-title="Basic dialog">
-  <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+     id="dialog1"
+     data-title="Basic no-button dialog">
+    <p>Basic dialog with all default jQuery UI behavior. The dialog window can be moved, resized and closed via the 'x' icon or Escape key.</p>
 </div>
 
-<div id="dlg2" class="dialog"
-     data-dialog-title="Empty the recycle bin?"
-     data-dialog-ismodal="true"
-     data-dialog-buttons="ok,cancel">
-  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+<!-- Common OK/Cancel dialog. -->
+<div class="dialog"
+     id="dialog2"
+     data-title="Common OK/Cancel dialog"
+     data-modal="true"
+     data-buttons="ok:Ok,cancel:Cancel">   <!-- Use format "event:text".  This is also the display order. -->
+    <!-- Regular jQuery UI Dialog markup can be used. -->
+    <p><span class="ui-icon ui-icon-alert"></span>Standard jQuery UI markup can be used to add icons.  Buttons are specified in markup.</p>
 </div>
+
+<!-- Custom dialog. -->
+<!-- Changing visibility of elements is done via the class attribute to allow a pure CSS implementation. -->
+<div class="dialog hide-x-icon"
+     id="dialog3"
+     data-title="Custom dialog"
+     data-modal="true"
+     data-width="500"
+     data-buttons="accept:Accept,ask-later:Ask Me Later,decline:Decline">   <!-- Event types are declared in markup; break away from fixed ok/cancel events and code what you mean. -->
+    <p><span class="ui-icon ui-icon-alert"></span>No 'x' icon.  Custom button events.  Custom width.</p>
+</div>
+
+
+<!-- Only needed for this demo; ignore this. -->
+<div id="demo-controls">
+    <button class="dialog-opener" data-selector="#dialog1">Show basic dialog 1</button>
+    <button class="dialog-opener" data-selector="#dialog2">Show common dialog 2</button>
+    <button class="dialog-opener" data-selector="#dialog3">Show customized dialog 3</button>
+    <div id="console"></div>
+    <div id="console-output-template"><p>{id}: user indicated {type}</p></div>
+</div>
+
 
 <script src="../3pty/jquery/jquery.js"></script>
 <script src="../3pty/jquery-ui/js/jquery-ui.js"></script>
 <script src="../src/dialog.js"></script>
 <script>
+/*global jQuery */
+(function ($) {
+'use strict';
 
-(function () {
-    $('#dlg2').bind('dialog-button-ok dialog-button-cancel', function (event) {
-        alert('User indicated ' + event.type.substring(event.type.lastIndexOf('-') + 1));
-        $(this).dialog("close");
-    });
-}());
 
+// Since all dialogs are regular jQuery UI dialogs, the jQuery UI API can be
+// used as normal.
+$('#dialog1').dialog('option', 'position', 'bottom');
+
+// Dialogs usually come up in response to some user action, so all dialogs are
+// hidden initially and by design there's no support for a data-show attribute.
+// If you do want to show a dialog initially (i.e. on page load) you can do so
+// via the regular jQuery UI API.
+$('#dialog1').dialog('open');
+
+// Dialogs will trigger events when the user initiates an action.
+// This is an example of handling such events.
+// Note: dialogs 1 and 3 will also receive the cancel event because of the
+//       Escape key or the 'x' icon.
+$('.dialog').bind('button:ok button:cancel button:accept button:ask-later button:decline', function (event, buttonType) {
+    var item = $('#console-output-template').clone();
+
+    item.html(item.html().replace('{id}', event.target.id).replace('{type}', buttonType));
+    $('#console').append(item.html());
+
+    $(this).dialog("close");
+});
+
+
+// Only needed for this demo; ignore this.
+$('.dialog-opener').click(function () {
+    $($(this).data('selector')).dialog('open');
+});
+
+
+}(jQuery));
 </script>
 </body>
 </html>
