@@ -1,11 +1,15 @@
 uducada = UI Development Using Class and Data Attributes
+(Obviously still a work in progress.)
 
-A JavaScript library for building fully-featured UIs.
-Simply use predefined markup, class and data attributes; no additional JavaScript coding required.
+This project enhances UI development with jQuery UI via markup-driven widget configuration and commonly used interaction techniques.
 
-First checkin: Friday, April 13, 2012
+By using specific markup, class attributes and data attributes, UI development is simplified and
+UI consistency is improved.  Widgets will become purely event driven and the only JavaScript needed
+will be to handle those events.
 
 Principles:
 - user-facing strings belong in HTML
-- JS script tags belong just before the end-body tag
+- JS script tags belong just before </body>
 
+History:
+- first checkin: Friday, April 13, 2012
