@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Dialog Demo</title>
+<link href="../3pty/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+
+<div class="dialog"
+     data-dialog-title="Basic dialog">
+  <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+</div>
+
+<div id="dlg2" class="dialog"
+     data-dialog-title="Empty the recycle bin?"
+     data-dialog-ismodal="true"
+     data-dialog-buttons="ok,cancel">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+
+<script src="../3pty/jquery/jquery.js"></script>
+<script src="../3pty/jquery-ui/js/jquery-ui.js"></script>
+<script src="../src/dialog.js"></script>
+<script>
+
+(function () {
+    $('#dlg2').bind('dialog-button-ok dialog-button-cancel', function (event) {
+        alert('User indicated ' + event.type.substring(event.type.lastIndexOf('-') + 1));
+        $(this).dialog("close");
+    });
+}());
+
+</script>
+</body>
+</html>
