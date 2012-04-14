@@ -1,8 +1,7 @@
 uducada = UI Development Using Class and Data Attributes
 
 A JavaScript library for building fully-featured UIs.
-Simply use predefined markup and class attributes.
-No additional JavaScript coding required.
+Simply use predefined markup, class and data attributes; no additional JavaScript coding required.
 
 First checkin: Friday, April 13, 2012
 
