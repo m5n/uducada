@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8">
 <title>Dialog Demo</title>
+<!-- Styling by your UI framework of choice. -->
 <link href="../3pty/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
-<link href="../src/dialog.css" rel="stylesheet" type="text/css" />
+<!-- Uducada styling. -->
+<link href="../src/css/dialog.css" rel="stylesheet" type="text/css" />
+<!-- Styling for this demo. -->
 <style>
 
 
@@ -31,14 +34,14 @@
 <!-- Note: the "id" attribute is only needed to reference this specific dialog later. -->
 <!-- Note: use data-title instead of jQuery UI's title attribute. -->
 <div class="dialog"
-     id="dialog1"
+     id="basic-dialog"
      data-title="Basic no-button dialog">
-    <p>Basic dialog with all default jQuery UI behavior. The dialog window can be moved, resized and closed via the 'x' icon or Escape key.</p>
+    <p>Basic dialog with all default jQuery UI behavior. The dialog window can be moved, resized and closed via Escape key. (Note there is no close icon by default.)</p>
 </div>
 
 <!-- Common OK/Cancel dialog. -->
 <div class="dialog"
-     id="dialog2"
+     id="common-dialog"
      data-title="Common OK/Cancel dialog"
      data-modal="true"
      data-buttons="ok:Ok,cancel:Cancel">   <!-- Use format "event:text".  This is also the display order. -->
@@ -47,61 +50,88 @@
 </div>
 
 <!-- Custom dialog. -->
-<!-- Changing visibility of elements is done via the class attribute to allow a pure CSS implementation. -->
-<div class="dialog hide-x-icon"
-     id="dialog3"
+<div class="dialog"
+     id="customized-dialog"
      data-title="Custom dialog"
      data-modal="true"
+     data-show-close-icon="true"
      data-width="500"
      data-buttons="accept:Accept,ask-later:Ask Me Later,decline:Decline">   <!-- Event types are declared in markup; break away from fixed ok/cancel events and code what you mean. -->
-    <p><span class="ui-icon ui-icon-alert"></span>No 'x' icon.  Custom button events.  Custom width.</p>
+    <p><span class="ui-icon ui-icon-alert"></span>Show close icon (the 'x' at top-right; default is don't show).  Custom button events.  Custom width.</p>
 </div>
 
+<!-- Avoid initialization of this dialog on page load. -->
+<!-- Use the uducada.dialog.init() function to initialize the dialog later. -->
+<div class="dialog"
+     id="delayed-init-dialog"
+     data-title="Delayed init dialog"
+     data-skip-init="true"
+     data-buttons="ok:Close">
+    <p>Use delayed loading for dialogs that are not expected to be used very often or for dialogs whose markup has to be loaded via AJAX before it can be shown.</p>
+</div>
 
 <!-- Only needed for this demo; ignore this. -->
 <div id="demo-controls">
-    <button class="dialog-opener" data-selector="#dialog1">Show basic dialog 1</button>
-    <button class="dialog-opener" data-selector="#dialog2">Show common dialog 2</button>
-    <button class="dialog-opener" data-selector="#dialog3">Show customized dialog 3</button>
+    <button class="dialog-opener" data-selector="#basic-dialog">Show basic dialog</button>
+    <button class="dialog-opener" data-selector="#common-dialog">Show common dialog</button>
+    <button class="dialog-opener" data-selector="#customized-dialog">Show customized dialog</button>
+    <button class="dialog-opener" data-selector="#delayed-init-dialog">Show delayed init dialog</button>
     <div id="console"></div>
     <div id="console-output-template"><p>{id}: user indicated {type}</p></div>
 </div>
 
 
+<!-- Your JavaScript framework of choice. -->
 <script src="../3pty/jquery/jquery.js"></script>
+<!-- Your UI framework of choice. -->
 <script src="../3pty/jquery-ui/js/jquery-ui.js"></script>
-<script src="../src/dialog.js"></script>
+<!-- Uducada framework adapters (symlinked). -->
+<script src="../src/js/js-framework-adapter.js"></script>
+<script src="../src/js/ui-framework-adapter.js"></script>
+<!-- Uducada itself. -->
+<script src="../uducada.js"></script>
+<!-- Code for this demo. -->
 <script>
-/*global jQuery */
+/*global jQuery, uducada */
 (function ($) {
 'use strict';
 
 
-// Since all dialogs are regular jQuery UI dialogs, the jQuery UI API can be
-// used as normal.
-$('#dialog1').dialog('option', 'position', 'bottom');
-
-// Dialogs usually come up in response to some user action, so all dialogs are
-// hidden initially and by design there's no support for a data-show attribute.
-// If you do want to show a dialog initially (i.e. on page load) you can do so
-// via the regular jQuery UI API.
-$('#dialog1').dialog('open');
-
 // Dialogs will trigger events when the user initiates an action.
-// This is an example of handling such events.
-// Note: dialogs 1 and 3 will also receive the cancel event because of the
-//       Escape key or the 'x' icon.
+// This is an example of handling such events using jQuery.
+// Note: all dialogs will also receive the cancel event because of the Escape
+//       key or the close icon (the 'x' in the top-right corner).
 $('.dialog').bind('button:ok button:cancel button:accept button:ask-later button:decline', function (event, buttonType) {
     var item = $('#console-output-template').clone();
 
     item.html(item.html().replace('{id}', event.target.id).replace('{type}', buttonType));
     $('#console').append(item.html());
 
-    $(this).dialog("close");
+    $(this).dialog('close');
 });
+
+// Since all dialogs are creating through the UI framework you chose to use,
+// that framework's API can be used as normal.  Here we used jQuery UI, so:
+$('#basic-dialog').dialog('option', 'position', 'bottom');
+
+// Dialogs usually come up in response to some user action, so all dialogs are
+// hidden initially and by design there's no support for a data-show attribute.
+// If you do want to show a dialog initially (i.e. on page load), use the API
+// of the UI framework you chose to use.  Here we used jQuery UI, so:
+$('#basic-dialog').dialog('open');
+
+// If a dialog is not immediately needed, it may make sense to not initialize
+// it until later.  Use the 'data-skip-init' flag and init it manually.
+// This is an advanced feature and most likely you'll not need to use it.
+// Assuming you don't need it, notice that there is no other call to udacada
+// anywhere in this demo.  Dialogs are configured completely from markup, and
+// you can use your frameworks of choice as normal.
+// Note: make sure to use uducada, not your UI framework of choice directly.
+uducada.dialog.init($('#delayed-init-dialog'));
 
 
 // Only needed for this demo; ignore this.
+// Make the buttons open the right dialog.
 $('.dialog-opener').click(function () {
     $($(this).data('selector')).dialog('open');
 });

@@ -11,13 +11,13 @@ YUICOMPRESSOR=../yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar
 echo "/* uducada v$VERSION - https://github.com/m5n/uducada */\n" > ./version.tmp
 
 # Add the version file to the minified and unminified versions of the CSS file.
-cat ./src/*.css > ./uducada.css.tmp
+cat ./src/css/*.css > ./uducada.css.tmp
 java -jar $YUICOMPRESSOR --type css -o ./uducada.min.css.tmp ./uducada.css.tmp
 cat ./version.tmp ./uducada.css.tmp > ./uducada.css
 cat ./version.tmp ./uducada.min.css.tmp > ./uducada.min.css
 
 # Add the version file to the minified and unminified versions of the JS file.
-cat ./src/*.js > ./uducada.js.tmp
+cat ./src/js/*.js > ./uducada.js.tmp
 java -jar $YUICOMPRESSOR --type js -o ./uducada.min.js.tmp ./uducada.js.tmp
 cat ./version.tmp ./uducada.js.tmp > ./uducada.js
 cat ./version.tmp ./uducada.min.js.tmp > ./uducada.min.js

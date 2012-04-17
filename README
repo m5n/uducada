@@ -1,23 +1,21 @@
 uducada = UI Development Using Class and Data Attributes
-(Obviously still a work in progress.)
+(Note: still a work in progress.)
 
-This project enhances UI development with jQuery UI via markup-driven widget configuration and commonly used interaction techniques.
-
+Uducada automates UI development via HTML attributes.  It removes the need to write JavaScript code for creating and hooking up widgets and providing common user experience feedback patterns.  Uducada takes care of this for you.
 By using specific markup, class attributes and data attributes, UI development is simplified and UI consistency is improved.  Widgets will become purely event driven and the only JavaScript needed will be to handle those events.
-Because of these rules, it's very easy to create your own helper functions to spit out this markup based on some options you pass in.
+Because of these rules, it's very easy to create your own helper functions in Ruby, Java or any other server-side language to spit out this markup based on the options you pass in.
+Although uducada relies on third-party libraries to provide UI widgets, these libraries are abstracted out so any framework can be used.  Initially there is support for jQuery UI but you can easily add an adapter for your framework of choice.
+A uducada JavaScript object is available for advanced features, but for the common case user interactions, there's no additional JavaScript library to learn.
 
 Principles:
+- Abstract external JS and UI frameworks so that any framework can be used
+- Support delayed initialization of widgets
 - CSS and JS go in external files, never inline or nested within the HTML
   (the included demos violate only this principle as their purpose is educational)
 - <link> tags go in the <head>, <script> tags go just before </body>
 - User-facing strings go in HTML, never in CSS or JS
 - Widget config is done via standard and valid HTML attributes whenever possible
-  or via custom data attributes otherwise
-- Visibility of elements is not treated as a widget configuration option and is
-  done via custom class attribute values to allow a pure CSS implementation
-- Variable names are non-abbreviated for clarity; minification will keep the
-  file size in check
-- Support delayed initialization of widgets
+  or via custom data attributes or class values otherwise
 
 History:
 - first checkin: Friday, April 13, 2012

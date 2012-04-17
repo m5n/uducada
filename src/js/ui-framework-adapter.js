@@ -1,0 +1,1 @@
+adapters/jquery-ui.adapter.js
