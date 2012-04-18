@@ -42,13 +42,6 @@ uducada.dialog = (function () {
         return result;
     }
 
-    // Expects object with keys:
-    // - buttonText: string of format 'ok:Ok,cancel:Cancel,...'
-    // - closeOnEscape: true | false
-    // - draggable: true | false
-    // - resizable: true | false
-    // - showCloseIcon: true | false
-    // TODO: when would this be called?  Dialogs are init'ed as soon as uducada.js loads!
     function setDefaults() {
         var defaults,
             items,
@@ -56,6 +49,12 @@ uducada.dialog = (function () {
 
         // Gather options from the DOM.
         defaults = uducada.jsfwk.getJsonDataAttributeValue('body', 'dialog-defaults');
+        // Expects object with keys:
+        // - buttonText: string of format 'ok:Ok,cancel:Cancel,...'
+        // - closeOnEscape: true | false
+        // - draggable: true | false
+        // - resizable: true | false
+        // - showCloseIcon: true | false
 
         defaultButtonTextLookup = {};
         items = parseButtonConfigString(defaults.buttonText || '', true);
