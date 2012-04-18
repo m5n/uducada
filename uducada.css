@@ -1,5 +1,9 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
 
+/* ========================================================================== */
+/* uducada - dialog.css - https://github.com/m5n/uducada                      */
+/* ========================================================================== */
+
 /* Hide all dialog markup by default (rather than waiting for the JS layer to
    hide it a fraction of time later). */
 .dialog {

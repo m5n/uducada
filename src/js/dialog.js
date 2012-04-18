@@ -1,4 +1,6 @@
-// uducada - dialog - https://github.com/m5n/uducada
+// =============================================================================
+// uducada - dialog.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global */
 var uducada = uducada || {};
@@ -46,9 +48,14 @@ uducada.dialog = (function () {
     // - draggable: true | false
     // - resizable: true | false
     // - showCloseIcon: true | false
-    function setDefaults(defaults) {
-        var items,
+    // TODO: when would this be called?  Dialogs are init'ed as soon as uducada.js loads!
+    function setDefaults() {
+        var defaults,
+            items,
             ii;
+
+        // Gather options from the DOM.
+        defaults = uducada.jsfwk.getJsonDataAttributeValue('body', 'dialog-defaults');
 
         defaultButtonTextLookup = {};
         items = parseButtonConfigString(defaults.buttonText || '', true);
@@ -77,6 +84,8 @@ uducada.dialog = (function () {
     }
 
     // Initialize a single dialog instance.
+    // element: JS framework reference  (not a DOM elt ref or a css selector)
+    // TODO: dialogs should be centered around some parent element; <body> by default.
     function initializeDialog(element) {
         var options,
             bb;
@@ -136,7 +145,7 @@ uducada.dialog = (function () {
     }
 
     // Initialize default options.
-    setDefaults({});
+    setDefaults();
 
     // Initialize all dialogs present in the markup, except those that indicate
     // to skip initialization.
@@ -146,8 +155,6 @@ uducada.dialog = (function () {
     return {
         BUTTON_EVENT_CANCEL: 'cancel',
 
-        init: initializeDialog,
-        defaults: setDefaults
+        init: initializeDialog
     };
 }());
-

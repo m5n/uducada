@@ -1,4 +1,6 @@
-// uducada - adapter for jQuery - https://github.com/m5n/uducada
+// =============================================================================
+// uducada - jquery.adapter.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global jQuery */
 var uducada = uducada || {};
@@ -15,6 +17,12 @@ uducada.jsfwk = (function ($) {
         });
     }
 
+    function getJsonDataAttributeValue(cssSelector, key) {
+        // jQuery automatically converts JSON-like string to an object.
+        return $(cssSelector).data(key);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     // keys: array
     function getDataAttributeValues(element, keys) {
         var result = {};
@@ -35,6 +43,7 @@ uducada.jsfwk = (function ($) {
     return {
         callFunctionForNonSkipInitElements: callFunctionForNonSkipInitElements,
         getDataAttributeValues: getDataAttributeValues,
+        getJsonDataAttributeValue: getJsonDataAttributeValue,
         trigger: trigger
     };
 }(jQuery));

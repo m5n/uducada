@@ -1,7 +1,6 @@
-// uducada - adapter for jQuery UI - https://github.com/m5n/uducada
-
-// TODO: after closing dialog, pressing Esc or Enter or Space triggers
-//       another event, at least in Safari... jQuery UI bug?
+// =============================================================================
+// uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global jQuery */
 var uducada = uducada || {};
@@ -9,6 +8,8 @@ uducada.uifwk = (function ($) {
     'use strict';
 
     // Trigger cancel event for non-button actions if needed.
+    // TODO: after closing dialog, pressing Esc or Enter or Space triggers
+    //       another event, at least in Safari... jQuery UI bug?
     function maybeTriggerCancelEvent(dialogElement, event, triggerFn) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.

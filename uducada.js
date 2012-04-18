@@ -1,6 +1,8 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
 
-// uducada - dialog - https://github.com/m5n/uducada
+// =============================================================================
+// uducada - dialog.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global */
 var uducada = uducada || {};
@@ -48,9 +50,14 @@ uducada.dialog = (function () {
     // - draggable: true | false
     // - resizable: true | false
     // - showCloseIcon: true | false
-    function setDefaults(defaults) {
-        var items,
+    // TODO: when would this be called?  Dialogs are init'ed as soon as uducada.js loads!
+    function setDefaults() {
+        var defaults,
+            items,
             ii;
+
+        // Gather options from the DOM.
+        defaults = uducada.jsfwk.getJsonDataAttributeValue('body', 'dialog-defaults');
 
         defaultButtonTextLookup = {};
         items = parseButtonConfigString(defaults.buttonText || '', true);
@@ -79,6 +86,8 @@ uducada.dialog = (function () {
     }
 
     // Initialize a single dialog instance.
+    // element: JS framework reference  (not a DOM elt ref or a css selector)
+    // TODO: dialogs should be centered around some parent element; <body> by default.
     function initializeDialog(element) {
         var options,
             bb;
@@ -138,7 +147,7 @@ uducada.dialog = (function () {
     }
 
     // Initialize default options.
-    setDefaults({});
+    setDefaults();
 
     // Initialize all dialogs present in the markup, except those that indicate
     // to skip initialization.
@@ -148,12 +157,12 @@ uducada.dialog = (function () {
     return {
         BUTTON_EVENT_CANCEL: 'cancel',
 
-        init: initializeDialog,
-        defaults: setDefaults
+        init: initializeDialog
     };
 }());
-
-// uducada - adapter for jQuery - https://github.com/m5n/uducada
+// =============================================================================
+// uducada - jquery.adapter.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global jQuery */
 var uducada = uducada || {};
@@ -170,6 +179,12 @@ uducada.jsfwk = (function ($) {
         });
     }
 
+    function getJsonDataAttributeValue(cssSelector, key) {
+        // jQuery automatically converts JSON-like string to an object.
+        return $(cssSelector).data(key);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     // keys: array
     function getDataAttributeValues(element, keys) {
         var result = {};
@@ -190,13 +205,13 @@ uducada.jsfwk = (function ($) {
     return {
         callFunctionForNonSkipInitElements: callFunctionForNonSkipInitElements,
         getDataAttributeValues: getDataAttributeValues,
+        getJsonDataAttributeValue: getJsonDataAttributeValue,
         trigger: trigger
     };
 }(jQuery));
-// uducada - adapter for jQuery UI - https://github.com/m5n/uducada
-
-// TODO: after closing dialog, pressing Esc or Enter or Space triggers
-//       another event, at least in Safari... jQuery UI bug?
+// =============================================================================
+// uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada
+// =============================================================================
 
 /*global jQuery */
 var uducada = uducada || {};
@@ -204,6 +219,8 @@ uducada.uifwk = (function ($) {
     'use strict';
 
     // Trigger cancel event for non-button actions if needed.
+    // TODO: after closing dialog, pressing Esc or Enter or Space triggers
+    //       another event, at least in Safari... jQuery UI bug?
     function maybeTriggerCancelEvent(dialogElement, event, triggerFn) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.

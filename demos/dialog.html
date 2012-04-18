@@ -27,7 +27,8 @@
 
 </style>
 </head>
-<body>
+<!-- Dialog defaults are set on the body tag. -->
+<body data-dialog-defaults='{"buttonText":"yes:Yes please,no:No Thanks!"}'>
 
 
 <!-- Basic no-button dialog. -->
@@ -47,6 +48,16 @@
      data-buttons="ok:Ok,cancel:Cancel">   <!-- Use format "event:text".  This is also the display order. -->
     <!-- Regular jQuery UI Dialog markup can be used. -->
     <p><span class="ui-icon ui-icon-alert"></span>Standard jQuery UI markup can be used to add icons.  Buttons are specified in markup.</p>
+</div>
+
+<!-- Common OK/Cancel dialog. -->
+<div class="dialog"
+     id="default-button-text-dialog"
+     data-title="Default button text dialog"
+     data-modal="true"
+     data-buttons="yes,no">   <!-- The button text for yes/no was set as a dialog default on the body tag. -->
+    <!-- Regular jQuery UI Dialog markup can be used. -->
+    <p>If you have a lot of dialogs with the same button text, you could specify default text values + other dialog defaults on the body tag.</p>
 </div>
 
 <!-- Custom dialog. -->
@@ -74,6 +85,7 @@
 <div id="demo-controls">
     <button class="dialog-opener" data-selector="#basic-dialog">Show basic dialog</button>
     <button class="dialog-opener" data-selector="#common-dialog">Show common dialog</button>
+    <button class="dialog-opener" data-selector="#default-button-text-dialog">Show default button text dialog</button>
     <button class="dialog-opener" data-selector="#customized-dialog">Show customized dialog</button>
     <button class="dialog-opener" data-selector="#delayed-init-dialog">Show delayed init dialog</button>
     <div id="console"></div>
@@ -101,7 +113,7 @@
 // This is an example of handling such events using jQuery.
 // Note: all dialogs will also receive the cancel event because of the Escape
 //       key or the close icon (the 'x' in the top-right corner).
-$('.dialog').bind('button:ok button:cancel button:accept button:ask-later button:decline', function (event, buttonType) {
+$('.dialog').bind('button:ok button:cancel button:accept button:ask-later button:decline button:yes button:no', function (event, buttonType) {
     var item = $('#console-output-template').clone();
 
     item.html(item.html().replace('{id}', event.target.id).replace('{type}', buttonType));
