@@ -17,7 +17,8 @@ cat ./version.tmp ./uducada.css.tmp > ./uducada.css
 cat ./version.tmp ./uducada.min.css.tmp > ./uducada.min.css
 
 # Add the version file to the minified and unminified versions of the JS file.
-cat ./src/js/*.js > ./uducada.js.tmp
+# Note: JS and UI frameworks need to be added first.
+cat ./src/js/js-framework-adapter.js ./src/js/ui-framework-adapter.js ./src/js/dialog.js > ./uducada.js.tmp
 java -jar $YUICOMPRESSOR --type js -o ./uducada.min.js.tmp ./uducada.js.tmp
 cat ./version.tmp ./uducada.js.tmp > ./uducada.js
 cat ./version.tmp ./uducada.min.js.tmp > ./uducada.min.js

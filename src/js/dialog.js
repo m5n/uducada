@@ -19,7 +19,7 @@ uducada.dialog = (function () {
         uducada.jsfwk.trigger(dialogElement, 'button:' + buttonEventType, [ buttonEventType ]);
     }
 
-    // 'k1:v1,k2:v2,...' --> [ {k1:v1}, {k2:v2}, ... ]
+    // 'k1:v1,k2:v2,...' --> [ {type: k1, text: v1}, {type: k2, text: v2}, ... ]
     function parseButtonConfigString(str, errorOnMissingText) {
         var items,
             pair,
