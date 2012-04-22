@@ -4,6 +4,7 @@
 /* Support for dialogs.  No references to JS or UI frameworks here!           */
 /* ========================================================================== */
 
+// TODO LATER: allow override of global default on a per-dialog level
 // TODO LATER: dialogs should be centered around some parent element; <body> by default.
 // TODO LATER: provide replacements for alert (default focus = OK button),
 //             confirm (default focus on OK button), and

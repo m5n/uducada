@@ -11,6 +11,16 @@ uducada.jsfwk = (function ($) {
     'use strict';
 
     // element: JS framework reference (not a DOM elt ref or a css selector)
+    function addClassToElementInParent(element, cssSelector, className) {
+        element.parent().find(cssSelector).addClass(className);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function removeClassFromElementInParent(element, cssSelector, className) {
+        element.parent().find(cssSelector).removeClass(className);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     function addClassToParent(element, className) {
         element.parent().addClass(className);
     }
@@ -97,6 +107,7 @@ uducada.jsfwk = (function ($) {
 
     // Public functions.
     return {
+        addClassToElementInParent: addClassToElementInParent,
         addClassToParent: addClassToParent,
         callFunctionForNestedElements: callFunctionForNestedElements,
         callFunctionForElementsIfDataValueIsNot: callFunctionForElementsIfDataValueIsNot,
@@ -105,6 +116,7 @@ uducada.jsfwk = (function ($) {
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
         handle: handle,
+        removeClassFromElementInParent: removeClassFromElementInParent,
         removeClassFromNestedElements: removeClassFromNestedElements,
         trigger: trigger
     };

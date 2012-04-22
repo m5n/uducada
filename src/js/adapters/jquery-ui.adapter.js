@@ -79,7 +79,10 @@ uducada.uifwk = (function ($) {
 
     // formElement: JS framework reference (not a DOM elt ref or a css selector)
     function initForm(formElement, options) {
-        // Support submit-on-enter option.
+        // Support submit-on-enter option on single-line input fields.
+        // Handle this separately from the text change detection events
+        // below, so that the submitHandler doesn't get called multiple
+        // times.
         formElement.find('input[type="text"]').bind('keypress', function (event) {
             if (event.keyCode === $.ui.keyCode.ENTER) {
                 if (options.submitOnEnter) {
@@ -90,21 +93,28 @@ uducada.uifwk = (function ($) {
             }
         });
 
-        // Support character count option.
+        // Support character count fields with validate-as-you-type behavior.
         formElement.find(options.characterCountFieldCssSelector).each(function () {
+            // Evaluate variables up-front, not for every key stroke.
             var inputElement = $(this),
-                countElement = options.getCharacterCountDisplayElementFunction(inputElement);
+                charCountElement = options.getCharacterCountDisplayElementFunction(inputElement),
+                validationRegex = options.getFormatRegExFunction(inputElement.data(options.formatDataOption));
 
             // Init count text.
-            countElement.text(inputElement.val().length);
+            charCountElement.text(inputElement.val().length);
 
-            // Handle changes in length.
-            // Various bindings are needed:
-            // change - to detect context menu paste followed by blur
-            // keyup - to detect keyboard paste
-            // keydown - to detect continuous keydown
+            // To detect changes in input length, these bindings are needed:
+            // - change - to detect context menu paste followed by field blur
+            // - keydown - to detect holding down a key to insert characters repeatedly
+            // - keyup - to detect keyboard paste followed by Ctrl/Option key release
             inputElement.bind('change keydown keyup', function () {
-                countElement.text(inputElement.val().length);
+                // Support character count option.
+                charCountElement.text(inputElement.val().length);
+
+                // Support validate-as-you-type option.
+                if (validationRegex) {
+                    options.handleInputValidationFunction(inputElement, inputElement.val(), validationRegex);
+                }
             });
         });
     }

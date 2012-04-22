@@ -1,5 +1,4 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
-
 /* ========================================================================== */
 /* uducada - dialog.css - https://github.com/m5n/uducada                      */
 /* ========================================================================== */
@@ -32,7 +31,11 @@ textarea,
     display: none;
 }
 
-.uducada-validation-failed {
+.uducada-validation-failed,
+/* .count-text should be independent of general validation set on label element
+   so that when user corrects input, failed color on .count-text disappears
+   because of override below. */
+.count-text.uducada-validation-failed {
     color: red;
 }
 

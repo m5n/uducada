@@ -1,3 +1,2 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
-
-.dialog{display:none}label,input[type="text"],textarea,.count-text,.instruction-text,.required-text,.validation-text{display:block}.required-text,.validation-text{display:none}.uducada-validation-failed{color:red}.instruction-text,.count-text{font-size:smaller;color:black}.uducada-hide-close-icon .ui-dialog-titlebar-close{display:none}
+.dialog{display:none}label,input[type="text"],textarea,.count-text,.instruction-text,.required-text,.validation-text{display:block}.required-text,.validation-text{display:none}.uducada-validation-failed,.count-text.uducada-validation-failed{color:red}.instruction-text,.count-text{font-size:smaller;color:black}.uducada-hide-close-icon .ui-dialog-titlebar-close{display:none}

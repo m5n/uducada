@@ -8,7 +8,7 @@ VERSION=`cat ./VERSION`
 YUICOMPRESSOR=../yuicompressor-2.4.7/build/yuicompressor-2.4.7.jar
 
 # Output tmp version file (use comment style that works for both CSS and JS).
-echo "/* uducada v$VERSION - https://github.com/m5n/uducada */\n" > ./version.tmp
+echo "/* uducada v$VERSION - https://github.com/m5n/uducada */" > ./version.tmp
 
 # Add the version file to the minified and unminified versions of the CSS file.
 # Note: no specific inclusion order needed.
