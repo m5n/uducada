@@ -1,6 +1,13 @@
-// =============================================================================
-// uducada - dialog.js - https://github.com/m5n/uducada
-// =============================================================================
+/* ========================================================================== */
+/* uducada - dialog.js - https://github.com/m5n/uducada                       */
+/* ========================================================================== */
+/* Support for dialogs.  No references to JS or UI frameworks here!           */
+/* ========================================================================== */
+
+// TODO LATER: dialogs should be centered around some parent element; <body> by default.
+// TODO LATER: provide replacements for alert (default focus = OK button),
+//             confirm (default focus on OK button), and
+//             prompt (where Enter triggers OK button)
 
 /*global */
 var uducada = uducada || {};
@@ -48,7 +55,7 @@ uducada.dialog = (function () {
             ii;
 
         // Gather options from the DOM.
-        defaults = uducada.jsfwk.getJsonDataAttributeValue('body', 'dialog-defaults');
+        defaults = uducada.jsfwk.getInterpretedDataValue('body', 'dialog-defaults') || {};
         // Expects object with keys:
         // - buttonText: string of format 'ok:Ok,cancel:Cancel,...'
         // - closeOnEscape: true | false
@@ -83,14 +90,13 @@ uducada.dialog = (function () {
     }
 
     // Initialize a single dialog instance.
-    // element: JS framework reference  (not a DOM elt ref or a css selector)
-    // TODO: dialogs should be centered around some parent element; <body> by default.
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     function initializeDialog(element) {
         var options,
             bb;
 
         // Gather options from the DOM.
-        options = uducada.jsfwk.getDataAttributeValues(element, [
+        options = uducada.jsfwk.getInterpretedDataValues(element, [
             'buttons',
             'close-on-escape',
             'draggable',
@@ -118,6 +124,11 @@ uducada.dialog = (function () {
             }
         }
 
+        // Events that affect a dialog's visibility but are not triggered via
+        // buttons need to be captured too, i.e. the Escape key and close icon.
+        // Make those trigger the cancel button event.
+        options.cancelButtonEventType = 'cancel';
+
         // Convert 'close-on-escape' to camel-case key and use default if needed.
         // Note: since value can be false, don't use value || default here.
         options.closeOnEscape = undefined === options['close-on-escape'] ? defaultCloseOnEscape : options['close-on-escape'];
@@ -138,6 +149,10 @@ uducada.dialog = (function () {
         // Note: since value can be false, don't use value || default here.
         options.showCloseIcon = undefined === options['show-close-icon'] ? defaultShowCloseIcon : options['show-close-icon'];
         delete options['show-close-icon'];
+        // For UI frameworks that do not have an option to hide the close icon,
+        // a custom CSS class is used.  Frameworks that do support such an
+        // option can ignore this option and just use options.showCloseIcon.
+        options.hideCloseIconCssClass = 'uducada-hide-close-icon';
 
         // Initialize this dialog.
         uducada.uifwk.initDialog(element, options);
@@ -148,12 +163,10 @@ uducada.dialog = (function () {
 
     // Initialize all dialogs present in the markup, except those that indicate
     // to skip initialization.
-    uducada.jsfwk.callFunctionForNonSkipInitElements('.dialog', initializeDialog);
+    uducada.jsfwk.callFunctionForElementsIfDataValueIsNot('.dialog', 'skip-init', true, initializeDialog);
 
-    // Public functions and variables.
+    // Public functions.
     return {
-        BUTTON_EVENT_CANCEL: 'cancel',
-
         init: initializeDialog
     };
 }());

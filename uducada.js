@@ -1,73 +1,148 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
 
-// =============================================================================
-// uducada - jquery.adapter.js - https://github.com/m5n/uducada
-// =============================================================================
+/* ========================================================================== */
+/* uducada - jquery.adapter.js - https://github.com/m5n/uducada               */
+/* ========================================================================== */
+/* All jQuery specific code.  No callbacks to uducada objects from here and   */
+/* no hardcoded uducada specific attribute names or CSS selectors.            */
+/* ========================================================================== */
 
 /*global jQuery */
 var uducada = uducada || {};
 uducada.jsfwk = (function ($) {
     'use strict';
 
-    function callFunctionForNonSkipInitElements(cssSelector, fn) {
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function addClassToParent(element, className) {
+        element.parent().addClass(className);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function callFunctionForNestedElements(element, cssSelector, fn) {
+        element.find(cssSelector).each(function () {
+            fn($(this));
+        });
+    }
+
+    // dataValue: true object type value (i.e. use true, not 'true')
+    function callFunctionForElementsIfDataValueIsNot(cssSelector, dataAttribute, dataValue, fn) {
         $(cssSelector).each(function () {
             var element = $(this);
 
-            if (!element.data('skip-init')) {
+            // jQuery's data() function automatically converts data type.
+            if (element.data(dataAttribute) !== dataValue) {
                 fn(element);
             }
         });
     }
 
-    function getJsonDataAttributeValue(cssSelector, key) {
-        // jQuery automatically converts JSON-like string to an object.
-        return $(cssSelector).data(key);
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function findInParent(element, cssSelector) {
+        return element.parent().find(cssSelector);
     }
 
+    // Retrieves a single data attribute on the given element or CSS selector,
+    // converting the string value to the right data type (number, boolean,
+    // object (via JSON conversion)).
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function getInterpretedDataValue(element, key) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element);
+        }
+
+        // jQuery's data() function automatically converts data type.
+        return element.data(key);
+    }
+
+    // Retrieves data attributes on the given element, converting the string
+    // value to the right data type (number, boolean, object (via JSON
+    // conversion)).
     // element: JS framework reference (not a DOM elt ref or a css selector)
     // keys: array
-    function getDataAttributeValues(element, keys) {
+    function getInterpretedDataValues(element, keys) {
         var result = {};
 
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element);
+        }
+
         $.each(keys, function (index, value) {
+            // jQuery's data() function automatically converts data type.
             result[value] = element.data(value);
         });
 
         return result;
     }
 
-    // eventOptions is an array.
+    // event: JS framework reference to an event
+    function haltEventPropagation(event) {
+        event.stopImmediatePropagation();
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function handle(element, eventType, fn) {
+        element.bind(eventType, fn);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function removeClassFromNestedElements(element, cssSelector, className) {
+        element.find(cssSelector).removeClass(className);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    // eventOptions: an array.
     function trigger(element, eventType, eventOptions) {
         $(element).trigger(eventType, eventOptions);
     }
 
     // Public functions.
     return {
-        callFunctionForNonSkipInitElements: callFunctionForNonSkipInitElements,
-        getDataAttributeValues: getDataAttributeValues,
-        getJsonDataAttributeValue: getJsonDataAttributeValue,
+        addClassToParent: addClassToParent,
+        callFunctionForNestedElements: callFunctionForNestedElements,
+        callFunctionForElementsIfDataValueIsNot: callFunctionForElementsIfDataValueIsNot,
+        findInParent: findInParent,
+        getInterpretedDataValue: getInterpretedDataValue,
+        getInterpretedDataValues: getInterpretedDataValues,
+        haltEventPropagation: haltEventPropagation,
+        handle: handle,
+        removeClassFromNestedElements: removeClassFromNestedElements,
         trigger: trigger
     };
 }(jQuery));
-// =============================================================================
-// uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada
-// =============================================================================
+/* ========================================================================== */
+/* uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada            */
+/* ========================================================================== */
+/* All jQuery UI specific code.  No callbacks to uducada objects from here    */
+/* and no hardcoded uducada specific attribute names or CSS selectors.        */
+/* Since jQuery UI depends on jQuery, direct jQuery calls are ok.             */
+/* ========================================================================== */
 
 /*global jQuery */
 var uducada = uducada || {};
 uducada.uifwk = (function ($) {
     'use strict';
 
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function getInput(element) {
+        return element.val();
+    }
+
     // Trigger cancel event for non-button actions if needed.
-    // TODO: after closing dialog, pressing Esc or Enter or Space triggers
-    //       another event, at least in Safari... jQuery UI bug?
-    function maybeTriggerCancelEvent(dialogElement, event, triggerFn) {
+    // dialogElement: JS framework reference (not a DOM elt ref or a css selector)
+    // event: JS framework reference to an event
+    // TODO LATER: after closing dialog, pressing Esc or Enter or Space triggers
+    //             another event, at least in Safari... jQuery UI bug?
+    function maybeTriggerCancelEvent(dialogElement, event, triggerFn, cancelButtonEventType) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
-            triggerFn(dialogElement, uducada.dialog.BUTTON_EVENT_CANCEL);
+            // Must pass back the dialog element and the button event type.
+            triggerFn(dialogElement, cancelButtonEventType);
         }
     }
 
+    // dialogElement: JS framework reference (not a DOM elt ref or a css selector)
     function initDialog(dialogElement, options) {
         var buttonConfig = [],
             onClose;
@@ -86,10 +161,10 @@ uducada.uifwk = (function ($) {
 
         // Events that affect a dialog's visibility but are not triggered via
         // buttons need to be captured too, i.e. the Escape key and close icon.
-        // TODO: all UI Fwk adapters will have to do this... how to enforce this?
+        // TODO LATER: all UI Fwk adapters will have to do this... how to enforce this?
         onClose = function (event) {
             // Must pass back the dialog element and the event object.
-            maybeTriggerCancelEvent(dialogElement, event, options.onClick);
+            maybeTriggerCancelEvent(dialogElement, event, options.onClick, options.cancelButtonEventType);
         };
 
         // Init the dialog.
@@ -105,7 +180,7 @@ uducada.uifwk = (function ($) {
             // to allow a pure CSS implementation.
             // jQuery UI shows a close icon (the 'x') by default, so only add
             // class to hide it.
-            dialogClass: options.showCloseIcon ? undefined : 'uducada-hide-close-icon',
+            dialogClass: options.showCloseIcon ? undefined : options.hideCloseIconCssClass,
 
             draggable: options.draggable,
             modal: options.modal,
@@ -115,14 +190,60 @@ uducada.uifwk = (function ($) {
         });
     }
 
+    // formElement: JS framework reference (not a DOM elt ref or a css selector)
+    function initForm(formElement, options) {
+        formElement.find('input[type="text"]').bind('keypress', function (event) {
+            if (event.keyCode === $.ui.keyCode.ENTER) {
+                if (options.submitOnEnter) {
+                    formElement.submit();
+                }
+                event.preventDefault();
+                return false;
+            }
+        });
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function show(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.show();
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function hide(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.hide();
+    }
+
     // Public functions.
     return {
-        initDialog: initDialog
+        getInput: getInput,
+        hide: hide,
+        initDialog: initDialog,
+        initForm: initForm,
+        show: show
     };
 }(jQuery));
-// =============================================================================
-// uducada - dialog.js - https://github.com/m5n/uducada
-// =============================================================================
+/* ========================================================================== */
+/* uducada - dialog.js - https://github.com/m5n/uducada                       */
+/* ========================================================================== */
+/* Support for dialogs.  No references to JS or UI frameworks here!           */
+/* ========================================================================== */
+
+// TODO LATER: dialogs should be centered around some parent element; <body> by default.
+// TODO LATER: provide replacements for alert (default focus = OK button),
+//             confirm (default focus on OK button), and
+//             prompt (where Enter triggers OK button)
 
 /*global */
 var uducada = uducada || {};
@@ -170,7 +291,7 @@ uducada.dialog = (function () {
             ii;
 
         // Gather options from the DOM.
-        defaults = uducada.jsfwk.getJsonDataAttributeValue('body', 'dialog-defaults');
+        defaults = uducada.jsfwk.getInterpretedDataValue('body', 'dialog-defaults') || {};
         // Expects object with keys:
         // - buttonText: string of format 'ok:Ok,cancel:Cancel,...'
         // - closeOnEscape: true | false
@@ -205,14 +326,13 @@ uducada.dialog = (function () {
     }
 
     // Initialize a single dialog instance.
-    // element: JS framework reference  (not a DOM elt ref or a css selector)
-    // TODO: dialogs should be centered around some parent element; <body> by default.
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     function initializeDialog(element) {
         var options,
             bb;
 
         // Gather options from the DOM.
-        options = uducada.jsfwk.getDataAttributeValues(element, [
+        options = uducada.jsfwk.getInterpretedDataValues(element, [
             'buttons',
             'close-on-escape',
             'draggable',
@@ -240,6 +360,11 @@ uducada.dialog = (function () {
             }
         }
 
+        // Events that affect a dialog's visibility but are not triggered via
+        // buttons need to be captured too, i.e. the Escape key and close icon.
+        // Make those trigger the cancel button event.
+        options.cancelButtonEventType = 'cancel';
+
         // Convert 'close-on-escape' to camel-case key and use default if needed.
         // Note: since value can be false, don't use value || default here.
         options.closeOnEscape = undefined === options['close-on-escape'] ? defaultCloseOnEscape : options['close-on-escape'];
@@ -260,6 +385,10 @@ uducada.dialog = (function () {
         // Note: since value can be false, don't use value || default here.
         options.showCloseIcon = undefined === options['show-close-icon'] ? defaultShowCloseIcon : options['show-close-icon'];
         delete options['show-close-icon'];
+        // For UI frameworks that do not have an option to hide the close icon,
+        // a custom CSS class is used.  Frameworks that do support such an
+        // option can ignore this option and just use options.showCloseIcon.
+        options.hideCloseIconCssClass = 'uducada-hide-close-icon';
 
         // Initialize this dialog.
         uducada.uifwk.initDialog(element, options);
@@ -270,12 +399,128 @@ uducada.dialog = (function () {
 
     // Initialize all dialogs present in the markup, except those that indicate
     // to skip initialization.
-    uducada.jsfwk.callFunctionForNonSkipInitElements('.dialog', initializeDialog);
+    uducada.jsfwk.callFunctionForElementsIfDataValueIsNot('.dialog', 'skip-init', true, initializeDialog);
 
-    // Public functions and variables.
+    // Public functions.
     return {
-        BUTTON_EVENT_CANCEL: 'cancel',
-
         init: initializeDialog
+    };
+}());
+/* ========================================================================== */
+/* uducada - form.js - https://github.com/m5n/uducada                         */
+/* ========================================================================== */
+/* Support for forms.  No references to JS or UI frameworks here!             */
+/* ========================================================================== */
+
+// TODO NOW: what should data-required mean?  Visual indicator only and use format regex for messaging?
+/* TODO:
+- placeholder support
+- required field indicator
+- server-side error display (AJAX)
+- char count/limit
+- value changed indicator
+*/
+
+/*global */
+var uducada = uducada || {};
+uducada.form = (function () {
+    'use strict';
+
+    var defaultSubmitOnEnter;
+
+    function setDefaults() {
+        var defaults;
+
+        // Gather options from the DOM.
+        defaults = uducada.jsfwk.getInterpretedDataValue('body', 'form-defaults') || {};
+        // Expects object with keys:
+        // - submitOnEnter: true | false
+
+        // Automatically submitting a multi-input form by pressing Enter in a
+        // single-line text input field is annoying, so don't allow it.
+        // Note: since value can be false, don't use value || default here.
+        defaultSubmitOnEnter = undefined === defaults.submitOnEnter ? false : defaults.submitOnEnter;
+    }
+
+    // Initialize a single form instance.
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function initializeForm(formElement) {
+        var options;
+
+        // Gather options from the DOM.
+        options = uducada.jsfwk.getInterpretedDataValues(formElement, [
+            'submit-on-enter'
+        ]);
+
+        // Convert 'submit-on-enter' to camel-case key and use default if needed.
+        // Note: since value can be false, don't use value || default here.
+        options.submitOnEnter = undefined === options['submit-on-enter'] ? defaultSubmitOnEnter : options['submit-on-enter'];
+        delete options['submit-on-enter'];
+
+        // Initialize this form.
+        uducada.uifwk.initForm(formElement, options);
+
+        // Handle form submission event.
+        // event: JS framework reference to an event
+        uducada.jsfwk.handle(formElement, 'submit', function (event) {
+            var allValid = true;
+
+            // Remove all previous messages, if any.
+            uducada.uifwk.hide('.required-text, .validation-text', formElement);
+            uducada.jsfwk.removeClassFromNestedElements(formElement, 'label', 'uducada-validation-failed');
+
+            // Check required fields and format violations, but only surface
+            // one error per field max. (What's the use of flagging an invalid
+            // format when a required field has no input?)
+            uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format]', function (inputElement) {
+                var msgElement, regex, format, valid = true;
+
+                if (uducada.jsfwk.getInterpretedDataValue(inputElement, 'required') &&
+                        !uducada.uifwk.getInput(inputElement)) {
+                    valid = false;
+                    msgElement = uducada.jsfwk.findInParent(inputElement, '.required-text');
+                } else {
+                    format = uducada.jsfwk.getInterpretedDataValue(inputElement, 'format');
+                    if (format !== undefined) {
+                        // Be nice and support {,n} too (JavaScript does not natively support it).
+                        format = format.replace(/\{,/g, '{0,');
+
+                        format = format.split('/');   // '/regex/mods' --> ['', 'regex', 'mods']
+                        regex = new RegExp(format[1], format[2]);
+                        if (!regex.test(uducada.uifwk.getInput(inputElement))) {
+                            valid = false;
+                            msgElement = uducada.jsfwk.findInParent(inputElement, '.validation-text');
+                        }
+                    }
+                }
+
+                if (!valid) {
+                    uducada.jsfwk.addClassToParent(inputElement, 'uducada-validation-failed');
+                    uducada.uifwk.show(msgElement);
+                    allValid = false;
+                }
+            });
+
+            if (!allValid) {
+                uducada.jsfwk.haltEventPropagation(event);
+            }
+
+            // Returning a boolean indicating if the form submission should
+            // continue is definitely required in jQuery.  Maybe it's not
+            // needed in other frameworks, but it doesn't hurt either.
+            return allValid;
+        });
+    }
+
+    // Initialize default options.
+    setDefaults();
+
+    // Initialize all form present in the markup, except those that indicate
+    // to skip initialization.
+    uducada.jsfwk.callFunctionForElementsIfDataValueIsNot('form', 'skip-init', true, initializeForm);
+
+    // Public functions.
+    return {
+        init: initializeForm
     };
 }());

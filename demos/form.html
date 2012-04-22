@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Form Demo</title>
+<!-- Styling by your UI framework of choice. -->
+<link href="../3pty/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+<!-- Uducada styling. -->
+<link href="../uducada.css" rel="stylesheet" type="text/css" />
+<!-- Styling for this demo. -->
+<style>
+
+
+/* Only needed for this demo; ignore this. */
+label, fieldset {
+    margin: 2em;
+}
+label[for*="radio"],
+label[for*="checkbox"] {
+    margin: 1em;
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- Form that can be submitted by pressing Enter key in a single-line text
+     field.  (By default, pressing Enter does not submit the form.) -->
+<form data-submit-on-enter="true">
+    <fieldset>
+        <p>This form will submit when pressing the Enter key.</p>
+
+        <label for="textfield-0">
+            Basic single-line text input field:
+            <input type="text" id="textfield-0" placeholder="Enter text here">
+        </label>
+
+        <button type="submit">Submit</button>
+    </fieldset>
+</form>
+
+<form>
+    <fieldset>
+        <p>By default, forms will <em>not</em> submit when pressing the Enter key.
+        This form shows some of the client-side validation capabilities.</p>
+
+        <label for="textfield-1">
+            Basic single-line text input field:
+            <input type="text" id="textfield-1" placeholder="Enter text here">
+        </label>
+        <label for="textfield-2">
+            Required field (via 'data-required' attribute):
+            <input type="text" id="textfield-2" placeholder="Enter text here"
+                   data-required="true">
+            <span class="required-text">Input required</span>
+            <!-- Note: no data-format here, so no validation-text needed. -->
+        </label>
+        <label for="textfield-3">
+            Required field (via 'data-format' attribute):
+            <input type="text" id="textfield-3" placeholder="Enter text here"
+                   data-format="/.+/">
+            <!-- Note: no data-required here, so no required-text needed. -->
+            <span class="validation-text">Input required</span>
+        </label>
+        <label for="textfield-4">
+            Required field, custom input format and instruction, different
+            message for required input and validation failure:
+            <input type="text" id="textfield-4" placeholder="Enter text here"
+                   data-required="true"
+                   data-format="/^\w*$/">
+            <span class="instruction-text">Alphanumeric characters or underscores only</span>
+            <span class="required-text">Input required</span>
+            <span class="validation-text">Input letters, numbers or underscores only</span>
+        </label>
+        <label for="textfield-5">
+            Maximum length (via 'maxlength' attribute--less ideal as input field won't accept more than max characters):
+            <input type="text" id="textfield-5" placeholder="Enter text here"
+                   data-format="/^\w*$/"
+                   maxlength="5">
+            <span class="instruction-text">Alphanumeric characters or underscores only, no more than 5 total</span>
+            <span class="validation-text">Input no more than 5 letters, numbers or underscores</span>
+        </label>
+        <label for="textfield-6">
+            Maximum length (via 'data-format' attribute--preferred as input field allows any length (easy copy-and-paste and massage input in field) but validation will show error if > max):
+            <input type="text" id="textfield-6" placeholder="Enter text here"
+                   data-format="/^\w{,5}$/">   <!-- Note: JavaScript does not support {,n} but uducada does. -->
+            <span class="instruction-text">Alphanumeric characters or underscores only, no more than 5 total</span>
+            <span class="validation-text">Input no more than 5 letters, numbers or underscores</span>
+        </label>
+        <label for="textfield-7">
+            Minimum length (via 'data-format' attribute):
+            <input type="text" id="textfield-7" placeholder="Enter text here"
+                   data-format="/^\w{3,}$/">
+            <span class="instruction-text">Alphanumeric characters or underscores only, 3 or more total</span>
+            <span class="validation-text">Input at least 3 letters, numbers or underscores</span>
+        </label>
+        <label for="textfield-8">
+            Minimum and maximum length (via 'data-format' attribute):
+            <input type="text" id="textfield-8" placeholder="Enter text here"
+                   data-format="/^\w{3,5}$/">
+            <span class="instruction-text">Alphanumeric characters or underscores only, at least 3 but no more than 5 total</span>
+            <span class="validation-text">Input between 3 and 5 letters, numbers or underscores</span>
+        </label>
+        <label for="textfield-9">
+            Exact format (via 'data-format' attribute):
+            <input type="text" id="textfield-9" placeholder="####-####"
+                   data-format="/^(\d{4}-\d{4})?$/">   <!-- Note: no input is ok, but any input must follow the format. -->
+            <span class="instruction-text">Enter account number using the format ####-####</span>
+            <span class="validation-text">Numbers only, and in format ####-####</span>
+        </label>
+
+        <button type="submit">Submit (trigger client-side validations)</button>
+    </fieldset>
+
+    <fieldset>
+        <label for="textarea-1">
+            Multi-line text input field:
+            <textarea id="textarea-1" placeholder="Input lots of text here"></textarea>
+        </label>
+
+        <button type="submit">Submit (trigger client-side validations)</button>
+    </fieldset>
+
+    <fieldset>
+        <label for="radio-button-1">
+            <input name="radio-group" type="radio" id="radio-button-1">
+            Radio button 1
+        </label>
+        <label for="radio-button-2">
+            <input name="radio-group" type="radio" id="radio-button-2">
+            Radio button 2
+        </label>
+        <label for="radio-button-3">
+            <input name="radio-group" type="radio" id="radio-button-3">
+            Radio button 3
+        </label>
+
+        <button type="submit">Submit (trigger client-side validations)</button>
+    </fieldset>
+
+    <fieldset>
+        <label for="checkbox-1">
+            <input name="checkbox-group" type="checkbox" id="checkbox-1">
+            Checkbox 1
+        </label>
+        <label for="checkbox-2">
+            <input name="checkbox-group" type="checkbox" id="checkbox-2">
+            Checkbox 2
+        </label>
+        <label for="checkbox-3">
+            <input name="checkbox-group" type="checkbox" id="checkbox-3">
+            Checkbox 3
+        </label>
+
+        <button type="submit">Submit (trigger client-side validations)</button>
+    </fieldset>
+</form>
+
+
+<!-- Your JavaScript framework of choice. -->
+<script src="../3pty/jquery/jquery.js"></script>
+<!-- Your UI framework of choice. -->
+<script src="../3pty/jquery-ui/js/jquery-ui.js"></script>
+<!-- Uducada. -->
+<script src="../uducada.js"></script>
+<!-- Code for this demo. -->
+<script>
+/*global jQuery, uducada */
+(function ($) {
+'use strict';
+
+
+/* Only needed for this demo; ignore this. */
+// Don't actually submit the form; w/o action and method, it'd in effect reload
+// the page and clear the form.
+$('form').submit(function () {
+    alert('Client-side validation, if any, passed successfully.\nNow regular submit would follow.');
+    return false;
+});
+
+
+
+}(jQuery));
+</script>
+</body>
+</html>

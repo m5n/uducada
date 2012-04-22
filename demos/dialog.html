@@ -97,10 +97,7 @@
 <script src="../3pty/jquery/jquery.js"></script>
 <!-- Your UI framework of choice. -->
 <script src="../3pty/jquery-ui/js/jquery-ui.js"></script>
-<!-- Uducada framework adapters (symlinked). -->
-<script src="../src/js/js-framework-adapter.js"></script>
-<script src="../src/js/ui-framework-adapter.js"></script>
-<!-- Uducada itself. -->
+<!-- Uducada. -->
 <script src="../uducada.js"></script>
 <!-- Code for this demo. -->
 <script>
@@ -113,6 +110,8 @@
 // This is an example of handling such events using jQuery.
 // Note: all dialogs will also receive the cancel event because of the Escape
 //       key or the close icon (the 'x' in the top-right corner).
+// Note: uducada prefers you are specific in your code so there is no special
+//       'button:*' or generic 'button' event to bind to.
 $('.dialog').bind('button:ok button:cancel button:accept button:ask-later button:decline button:yes button:no', function (event, buttonType) {
     var item = $('#console-output-template').clone();
 
@@ -142,7 +141,7 @@ $('#basic-dialog').dialog('open');
 uducada.dialog.init($('#delayed-init-dialog'));
 
 
-// Only needed for this demo; ignore this.
+/* Only needed for this demo; ignore this. */
 // Make the buttons open the right dialog.
 $('.dialog-opener').click(function () {
     $($(this).data('selector')).dialog('open');

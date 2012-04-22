@@ -1,0 +1,28 @@
+/* ========================================================================== */
+/* uducada - form.css - https://github.com/m5n/uducada                        */
+/* ========================================================================== */
+/* Non-UI framework specific form styling.                                    */
+/* ========================================================================== */
+
+label,
+input[type="text"],
+textarea,
+.instruction-text,
+.required-text,
+.validation-text {
+    display: block;
+}
+
+.required-text,
+.validation-text {
+    display: none;
+}
+
+.uducada-validation-failed {
+    color: red;
+}
+
+.instruction-text {
+    font-size: smaller;
+    color: black;   /* Overrides label.uducada-validation-failed color. */
+}

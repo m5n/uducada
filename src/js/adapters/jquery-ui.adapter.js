@@ -1,22 +1,35 @@
-// =============================================================================
-// uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada
-// =============================================================================
+/* ========================================================================== */
+/* uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada            */
+/* ========================================================================== */
+/* All jQuery UI specific code.  No callbacks to uducada objects from here    */
+/* and no hardcoded uducada specific attribute names or CSS selectors.        */
+/* Since jQuery UI depends on jQuery, direct jQuery calls are ok.             */
+/* ========================================================================== */
 
 /*global jQuery */
 var uducada = uducada || {};
 uducada.uifwk = (function ($) {
     'use strict';
 
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function getInput(element) {
+        return element.val();
+    }
+
     // Trigger cancel event for non-button actions if needed.
-    // TODO: after closing dialog, pressing Esc or Enter or Space triggers
-    //       another event, at least in Safari... jQuery UI bug?
-    function maybeTriggerCancelEvent(dialogElement, event, triggerFn) {
+    // dialogElement: JS framework reference (not a DOM elt ref or a css selector)
+    // event: JS framework reference to an event
+    // TODO LATER: after closing dialog, pressing Esc or Enter or Space triggers
+    //             another event, at least in Safari... jQuery UI bug?
+    function maybeTriggerCancelEvent(dialogElement, event, triggerFn, cancelButtonEventType) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
-            triggerFn(dialogElement, uducada.dialog.BUTTON_EVENT_CANCEL);
+            // Must pass back the dialog element and the button event type.
+            triggerFn(dialogElement, cancelButtonEventType);
         }
     }
 
+    // dialogElement: JS framework reference (not a DOM elt ref or a css selector)
     function initDialog(dialogElement, options) {
         var buttonConfig = [],
             onClose;
@@ -35,10 +48,10 @@ uducada.uifwk = (function ($) {
 
         // Events that affect a dialog's visibility but are not triggered via
         // buttons need to be captured too, i.e. the Escape key and close icon.
-        // TODO: all UI Fwk adapters will have to do this... how to enforce this?
+        // TODO LATER: all UI Fwk adapters will have to do this... how to enforce this?
         onClose = function (event) {
             // Must pass back the dialog element and the event object.
-            maybeTriggerCancelEvent(dialogElement, event, options.onClick);
+            maybeTriggerCancelEvent(dialogElement, event, options.onClick, options.cancelButtonEventType);
         };
 
         // Init the dialog.
@@ -54,7 +67,7 @@ uducada.uifwk = (function ($) {
             // to allow a pure CSS implementation.
             // jQuery UI shows a close icon (the 'x') by default, so only add
             // class to hide it.
-            dialogClass: options.showCloseIcon ? undefined : 'uducada-hide-close-icon',
+            dialogClass: options.showCloseIcon ? undefined : options.hideCloseIconCssClass,
 
             draggable: options.draggable,
             modal: options.modal,
@@ -64,8 +77,47 @@ uducada.uifwk = (function ($) {
         });
     }
 
+    // formElement: JS framework reference (not a DOM elt ref or a css selector)
+    function initForm(formElement, options) {
+        formElement.find('input[type="text"]').bind('keypress', function (event) {
+            if (event.keyCode === $.ui.keyCode.ENTER) {
+                if (options.submitOnEnter) {
+                    formElement.submit();
+                }
+                event.preventDefault();
+                return false;
+            }
+        });
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function show(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.show();
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function hide(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.hide();
+    }
+
     // Public functions.
     return {
-        initDialog: initDialog
+        getInput: getInput,
+        hide: hide,
+        initDialog: initDialog,
+        initForm: initForm,
+        show: show
     };
 }(jQuery));

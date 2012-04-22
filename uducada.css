@@ -3,12 +3,47 @@
 /* ========================================================================== */
 /* uducada - dialog.css - https://github.com/m5n/uducada                      */
 /* ========================================================================== */
+/* Non-UI framework specific dialog styling.                                  */
+/* ========================================================================== */
 
 /* Hide all dialog markup by default (rather than waiting for the JS layer to
    hide it a fraction of time later). */
 .dialog {
     display: none;
 }
+/* ========================================================================== */
+/* uducada - form.css - https://github.com/m5n/uducada                        */
+/* ========================================================================== */
+/* Non-UI framework specific form styling.                                    */
+/* ========================================================================== */
+
+label,
+input[type="text"],
+textarea,
+.instruction-text,
+.required-text,
+.validation-text {
+    display: block;
+}
+
+.required-text,
+.validation-text {
+    display: none;
+}
+
+.uducada-validation-failed {
+    color: red;
+}
+
+.instruction-text {
+    font-size: smaller;
+    color: black;   /* Overrides label.uducada-validation-failed color. */
+}
+/* ========================================================================== */
+/* uducada - jquery-ui.adapter.css - https://github.com/m5n/uducada           */
+/* ========================================================================== */
+/* UI framework specific styles using classes set by the uducada codebase.    */
+/* ========================================================================== */
 
 /* Hide close icon (the 'x') if needed. */
 .uducada-hide-close-icon .ui-dialog-titlebar-close {
