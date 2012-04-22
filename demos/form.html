@@ -59,7 +59,7 @@ label[for*="checkbox"] {
         <label for="textfield-3">
             Required field (via 'data-format' attribute):
             <input type="text" id="textfield-3" placeholder="Enter text here"
-                   data-format="/.+/">
+                   data-format="/./">
             <!-- Note: no data-required here, so no required-text needed. -->
             <span class="validation-text">Input required</span>
         </label>
@@ -74,7 +74,7 @@ label[for*="checkbox"] {
             <span class="validation-text">Input letters, numbers or underscores only</span>
         </label>
         <label for="textfield-5">
-            Maximum length (via 'maxlength' attribute--less ideal as input field won't accept more than max characters):
+            Maximum length (via 'maxlength' attribute--very rigorous as input field will not accept more than max characters):
             <input type="text" id="textfield-5" placeholder="Enter text here"
                    data-format="/^\w*$/"
                    maxlength="5">
@@ -82,7 +82,7 @@ label[for*="checkbox"] {
             <span class="validation-text">Input no more than 5 letters, numbers or underscores</span>
         </label>
         <label for="textfield-6">
-            Maximum length (via 'data-format' attribute--preferred as input field allows any length (easy copy-and-paste and massage input in field) but validation will show error if > max):
+            Maximum length (via 'data-format' attribute--more user friendly as it allows massaging of input until it "fits" (e.g. for easy copy-and-paste); validation will catch if input length > max):
             <input type="text" id="textfield-6" placeholder="Enter text here"
                    data-format="/^\w{,5}$/">   <!-- Note: JavaScript does not support {,n} but uducada does. -->
             <span class="instruction-text">Alphanumeric characters or underscores only, no more than 5 total</span>
@@ -109,14 +109,34 @@ label[for*="checkbox"] {
             <span class="instruction-text">Enter account number using the format ####-####</span>
             <span class="validation-text">Numbers only, and in format ####-####</span>
         </label>
+        <label for="textfield-10">
+            Show character count (no validation or limits here):
+            <input type="text" id="textfield-10" placeholder="Enter text here"
+                   data-show-character-count="true">
+            <span class="count-text">You have typed <span class="count"></span> characters</span>
+        </label>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
 
     <fieldset>
         <label for="textarea-1">
-            Multi-line text input field:
-            <textarea id="textarea-1" placeholder="Input lots of text here"></textarea>
+            Multi-line text input field showing character count:
+            <textarea id="textarea-1" placeholder="Input lots of text here"
+                      data-show-character-count="true"
+                      data-format="/^.{,100}$/"></textarea>   <!-- Note: don't use the 'm' flag here as it behaves differently than you think; uducada will apply regex to entire input as if it were a single line. -->
+            <span class="count-text"><span class="count"></span>/100</span>
+            <span class="validation-text">Limit input to 100 characters max</span>
+        </label>
+
+        <label for="textarea-2">
+            Multi-line text input field showing character count, with initial value:
+            <textarea id="textarea-2" placeholder="Input lots of text here"
+                      data-show-character-count="true"
+                      data-format="/^.{,100}$/">Some default text here.
+The count should reflect that.</textarea>
+            <span class="count-text"><span class="count"></span>/100</span>
+            <span class="validation-text">Limit input to 100 characters max</span>
         </label>
 
         <button type="submit">Submit (trigger client-side validations)</button>
@@ -175,6 +195,7 @@ label[for*="checkbox"] {
 // Don't actually submit the form; w/o action and method, it'd in effect reload
 // the page and clear the form.
 $('form').submit(function () {
+    // TODO: simulate busy mask instead of alert.
     alert('Client-side validation, if any, passed successfully.\nNow regular submit would follow.');
     return false;
 });

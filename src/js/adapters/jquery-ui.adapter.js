@@ -79,6 +79,7 @@ uducada.uifwk = (function ($) {
 
     // formElement: JS framework reference (not a DOM elt ref or a css selector)
     function initForm(formElement, options) {
+        // Support submit-on-enter option.
         formElement.find('input[type="text"]').bind('keypress', function (event) {
             if (event.keyCode === $.ui.keyCode.ENTER) {
                 if (options.submitOnEnter) {
@@ -87,6 +88,24 @@ uducada.uifwk = (function ($) {
                 event.preventDefault();
                 return false;
             }
+        });
+
+        // Support character count option.
+        formElement.find(options.characterCountFieldCssSelector).each(function () {
+            var inputElement = $(this),
+                countElement = options.getCharacterCountDisplayElementFunction(inputElement);
+
+            // Init count text.
+            countElement.text(inputElement.val().length);
+
+            // Handle changes in length.
+            // Various bindings are needed:
+            // change - to detect context menu paste followed by blur
+            // keyup - to detect keyboard paste
+            // keydown - to detect continuous keydown
+            inputElement.bind('change keydown keyup', function () {
+                countElement.text(inputElement.val().length);
+            });
         });
     }
 

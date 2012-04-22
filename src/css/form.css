@@ -7,6 +7,7 @@
 label,
 input[type="text"],
 textarea,
+.count-text,
 .instruction-text,
 .required-text,
 .validation-text {
@@ -22,7 +23,8 @@ textarea,
     color: red;
 }
 
-.instruction-text {
+.instruction-text,
+.count-text {
     font-size: smaller;
     color: black;   /* Overrides label.uducada-validation-failed color. */
 }

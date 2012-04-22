@@ -4,14 +4,12 @@
 /* Support for forms.  No references to JS or UI frameworks here!             */
 /* ========================================================================== */
 
-// TODO NOW: what should data-required mean?  Visual indicator only and use format regex for messaging?
-/* TODO:
-- placeholder support
-- required field indicator
-- server-side error display (AJAX)
-- char count/limit
-- value changed indicator
-*/
+// TODO NOW: what should data-required mean?  Shortcut for data-format and/or visual indicator and use format regex for messaging?
+// TODO NOW: color char count red if over limit
+// TODO NOW: required field indicator
+// TODO: value changed indicator
+// TODO: server-side error display (AJAX)
+// TODO LATER: placeholder support for older browsers
 
 /*global */
 var uducada = uducada || {};
@@ -49,6 +47,13 @@ uducada.form = (function () {
         options.submitOnEnter = undefined === options['submit-on-enter'] ? defaultSubmitOnEnter : options['submit-on-enter'];
         delete options['submit-on-enter'];
 
+        // Support for character count fields.
+        options.characterCountFieldCssSelector = '[data-show-character-count="true"]';
+        // element: JS framework reference (not a DOM elt ref or a css selector)
+        options.getCharacterCountDisplayElementFunction = function (element) {
+            return element.parent().find('.count-text .count');
+        };
+
         // Initialize this form.
         uducada.uifwk.initForm(formElement, options);
 
@@ -65,7 +70,7 @@ uducada.form = (function () {
             // one error per field max. (What's the use of flagging an invalid
             // format when a required field has no input?)
             uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format]', function (inputElement) {
-                var msgElement, regex, format, valid = true;
+                var msgElement, regex, format, input, valid = true;
 
                 if (uducada.jsfwk.getInterpretedDataValue(inputElement, 'required') &&
                         !uducada.uifwk.getInput(inputElement)) {
@@ -74,12 +79,15 @@ uducada.form = (function () {
                 } else {
                     format = uducada.jsfwk.getInterpretedDataValue(inputElement, 'format');
                     if (format !== undefined) {
-                        // Be nice and support {,n} too (JavaScript does not natively support it).
+                        // Be nice and support {,n}; JavaScript does not natively support it.
                         format = format.replace(/\{,/g, '{0,');
+
+                        // Handle multi-line matches within textareas, as 'm' flag is not intended for what we need here, e.g. /^.{0,2}$/m.test('1\n2') returns true.
+                        input = uducada.uifwk.getInput(inputElement).replace(/[\n\r]/g, ' ');
 
                         format = format.split('/');   // '/regex/mods' --> ['', 'regex', 'mods']
                         regex = new RegExp(format[1], format[2]);
-                        if (!regex.test(uducada.uifwk.getInput(inputElement))) {
+                        if (!regex.test(input)) {
                             valid = false;
                             msgElement = uducada.jsfwk.findInParent(inputElement, '.validation-text');
                         }
