@@ -12,8 +12,17 @@ uducada.jsfwk = (function ($) {
     'use strict';
 
     // element: JS framework reference (not a DOM elt ref or a css selector)
+    function addClassToElement(element, className) {
+        element.addClass(className);
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
     function addClassToElementInParent(element, cssSelector, className) {
         element.parent().find(cssSelector).addClass(className);
+    }
+
+    function addClassToNestedElement(element, cssSelector, className) {
+        element.find(cssSelector).addClass(className);
     }
 
     // element: JS framework reference (not a DOM elt ref or a css selector)
@@ -24,6 +33,10 @@ uducada.jsfwk = (function ($) {
     // element: JS framework reference (not a DOM elt ref or a css selector)
     function addClassToParent(element, className) {
         element.parent().addClass(className);
+    }
+
+    function appendToParent(newElement, childElement) {
+        childElement.parent().append(newElement);
     }
 
     // element: JS framework reference (not a DOM elt ref or a css selector)
@@ -45,15 +58,85 @@ uducada.jsfwk = (function ($) {
         });
     }
 
-    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function createElement(tagName, attributes) {
+        var attributeString = '';
+
+        attributes = attributes || {};
+
+        $.each(attributes, function (key, value) {
+            attributeString += ' ' + key + '="' + value + '"';
+        });
+
+        return $('<' + tagName + attributeString + '"></' + tagName + '>');
+    }
+
+    function coverElementAndShow(otherElement, elementToCover) {
+        otherElement.css({
+            width: elementToCover.width() + 'px',
+            height: elementToCover.height() + 'px',
+            position: 'absolute',
+            top: elementToCover.position().top + 'px',
+            left: elementToCover.position().left + 'px'
+        }).show();
+    }
+
+    // element: JS framework reference or CSS selector (not a DOM element reference)
+    function findInElement(element, cssSelector) {
+        var result;
+
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element);
+        }
+
+        result = element.find(cssSelector);
+        if (result.length === 0) {
+            result = undefined;
+        }
+
+        return result;
+    }
+
+    // element: JS framework reference or CSS selector (not a DOM element reference)
     function findInParent(element, cssSelector) {
-        return element.parent().find(cssSelector);
+        return findInElement(element.parent(), cssSelector);
+    }
+
+    // xhr: JS framework reference
+    // May throw a JSON parse exception
+    function getAjaxResponseTextAsJson(xhr) {
+        return jQuery.parseJSON(xhr.responseText);
+    }
+
+    // xhr: JS framework reference
+    function getAjaxResponseTextAsString(xhr) {
+        return xhr.responseText;
+    }
+
+    // Retrieves standard attributes on the given element as strings.
+    // element: JS framework reference or CSS selector (not a DOM element reference)
+    // keys: array
+    function getAttributeValues(element, keys) {
+        var result = {};
+
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element);
+        }
+
+        $.each(keys, function (index, value) {
+            // Note: jQuery's attr() function does not convert data type (which
+            // is in agreement with this function's purpose).
+            result[value] = element.attr(value);
+        });
+
+        return result;
     }
 
     // Retrieves a single data attribute on the given element or CSS selector,
     // converting the string value to the right data type (number, boolean,
     // object (via JSON conversion)).
-    // element: JS framework reference (not a DOM elt ref or a css selector)
+    // element: JS framework reference or CSS selector (not a DOM element reference)
     function getInterpretedDataValue(element, key) {
         if (typeof element === 'string') {
             // CSS selector so convert to JS framework object.
@@ -67,7 +150,7 @@ uducada.jsfwk = (function ($) {
     // Retrieves data attributes on the given element, converting the string
     // value to the right data type (number, boolean, object (via JSON
     // conversion)).
-    // element: JS framework reference (not a DOM elt ref or a css selector)
+    // element: JS framework reference or CSS selector (not a DOM element reference)
     // keys: array
     function getInterpretedDataValues(element, keys) {
         var result = {};
@@ -95,9 +178,47 @@ uducada.jsfwk = (function ($) {
         element.bind(eventType, fn);
     }
 
+    function insertBeforeNestedElement(newElement, parentElement, childCssSelector) {
+        var element = parentElement.find(childCssSelector);
+        if (element.length > 0) {
+            newElement.insertBefore(element);
+        } else {
+            throw new Error('No such element: ' + childCssSelector);
+        }
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function makeAjaxRequest(element, type, url, data, successEvent, failureEvent) {
+        $.ajax({
+            type: type,
+            dataType: 'json',
+            url: url,
+            data: data,
+            context: element
+        }).done(function () {
+            element.trigger(successEvent, arguments);
+        }).fail(function () {
+            element.trigger(failureEvent, arguments);
+        });
+    }
+
+    // event: JS framework reference to an event
+    function preventDefaultEventAction(event) {
+        event.preventDefault();
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function removeClassFromElement(element, className) {
+        element.removeClass(className);
+    }
+
     // element: JS framework reference (not a DOM elt ref or a css selector)
     function removeClassFromNestedElements(element, cssSelector, className) {
         element.find(cssSelector).removeClass(className);
+    }
+
+    function setText(element, text) {
+        element.text(text);
     }
 
     // element: JS framework reference (not a DOM elt ref or a css selector)
@@ -108,17 +229,31 @@ uducada.jsfwk = (function ($) {
 
     // Public functions.
     return {
+        addClassToElement: addClassToElement,
         addClassToElementInParent: addClassToElementInParent,
+        addClassToNestedElement: addClassToNestedElement,
         addClassToParent: addClassToParent,
+        appendToParent: appendToParent,
         callFunctionForNestedElements: callFunctionForNestedElements,
         callFunctionForElementsIfDataValueIsNot: callFunctionForElementsIfDataValueIsNot,
+        createElement: createElement,
+        coverElementAndShow: coverElementAndShow,
+        findInElement: findInElement,
         findInParent: findInParent,
+        getAjaxResponseTextAsJson: getAjaxResponseTextAsJson,
+        getAjaxResponseTextAsString: getAjaxResponseTextAsString,
+        getAttributeValues: getAttributeValues,
         getInterpretedDataValue: getInterpretedDataValue,
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
         handle: handle,
+        insertBeforeNestedElement: insertBeforeNestedElement,
+        makeAjaxRequest: makeAjaxRequest,
+        preventDefaultEventAction: preventDefaultEventAction,
+        removeClassFromElement: removeClassFromElement,
         removeClassFromElementInParent: removeClassFromElementInParent,
         removeClassFromNestedElements: removeClassFromNestedElements,
+        setText: setText,
         trigger: trigger
     };
 }(jQuery));
@@ -143,8 +278,7 @@ uducada.uifwk = (function ($) {
     // Trigger cancel event for non-button actions if needed.
     // dialogElement: JS framework reference (not a DOM elt ref or a css selector)
     // event: JS framework reference to an event
-    // TODO LATER: after closing dialog, pressing Esc or Enter or Space triggers
-    //             another event, at least in Safari... jQuery UI bug?
+    // TODO LATER: after closing dialog, pressing Esc or Enter or Space triggers another event, at least in Safari... jQuery UI bug?
     function maybeTriggerCancelEvent(dialogElement, event, triggerFn, cancelButtonEventType) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
@@ -172,7 +306,7 @@ uducada.uifwk = (function ($) {
 
         // Events that affect a dialog's visibility but are not triggered via
         // buttons need to be captured too, i.e. the Escape key and close icon.
-        // TODO LATER: all UI Fwk adapters will have to do this... how to enforce this?
+        // TODO LATER: all UI Fwk adapters will have to trigger button:cancel event for non-buttons... how to enforce this?
         onClose = function (event) {
             // Must pass back the dialog element and the event object.
             maybeTriggerCancelEvent(dialogElement, event, options.onClick, options.cancelButtonEventType);
@@ -221,19 +355,45 @@ uducada.uifwk = (function ($) {
         formElement.find(options.characterCountFieldCssSelector).each(function () {
             // Evaluate variables up-front, not for every key stroke.
             var inputElement = $(this),
-                charCountElement = options.getCharacterCountDisplayElementFunction(inputElement),
+                charCountTypedElement = options.getCharacterCountTypedDisplayElementFunction(inputElement),
+                charCountLeftElement = options.getCharacterCountLeftDisplayElementFunction(inputElement),
+                charCountLeft0Element = options.getCharacterCountLeft0DisplayElementFunction(inputElement),
+                maxCharCount = inputElement.data(options.maxCharacterCountDataOption),
                 validationRegex = options.getFormatRegExFunction(inputElement.data(options.formatDataOption));
 
+            // Init maxCharCount as it's optional.
+            maxCharCount = maxCharCount ? parseInt(maxCharCount, 10) : undefined;
+
             // Init count text.
-            charCountElement.text(inputElement.val().length);
+            if (charCountTypedElement) {
+                charCountTypedElement.text(inputElement.val().length);
+            }
+            if (maxCharCount !== undefined) {
+                if (charCountLeftElement) {
+                    charCountLeftElement.text(maxCharCount - inputElement.val().length);
+                }
+                if (charCountLeft0Element) {
+                    charCountLeft0Element.text(Math.max(maxCharCount - inputElement.val().length, 0));
+                }
+            }
 
             // To detect changes in input length, these bindings are needed:
             // - change - to detect context menu paste followed by field blur
-            // - keyup - to detect keyboard paste followed by Ctrl/Option key release
             // - keydown - to detect holding down a key to insert characters repeatedly
+            // - keyup - to detect keyboard paste followed by Ctrl/Option key release
             inputElement.bind('change keydown keyup', function () {
                 // Support character count option.
-                charCountElement.text(inputElement.val().length);
+                if (charCountTypedElement) {
+                    charCountTypedElement.text(inputElement.val().length);
+                }
+                if (maxCharCount !== undefined) {
+                    if (charCountLeftElement) {
+                        charCountLeftElement.text(maxCharCount - inputElement.val().length);
+                    }
+                    if (charCountLeft0Element) {
+                        charCountLeft0Element.text(Math.max(maxCharCount - inputElement.val().length, 0));
+                    }
+                }
 
                 // Support validate-as-you-type option.
                 if (validationRegex) {
@@ -241,6 +401,16 @@ uducada.uifwk = (function ($) {
                 }
             });
         });
+    }
+
+    // formElement: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    function serializeForm(formElement, parentElement) {
+        if (typeof formElement === 'string') {
+            // CSS selector so convert to JS framework object.
+            formElement = $(formElement, parentElement);
+        }
+
+        return formElement.serialize();
     }
 
     // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
@@ -271,16 +441,98 @@ uducada.uifwk = (function ($) {
         hide: hide,
         initDialog: initDialog,
         initForm: initForm,
+        serializeForm: serializeForm,
         show: show
     };
 }(jQuery));
+/* ========================================================================== */
+/* uducada - busy-mask.js - https://github.com/m5n/uducada                    */
+/* ========================================================================== */
+/* Support for busy masks.  No references to JS or UI frameworks here!        */
+/* ========================================================================== */
+
+/*global clearTimeout, setTimeout */
+var uducada = uducada || {};
+uducada.busyMask = (function () {
+    'use strict';
+
+    // TODO LATER: busy mask should also prevent any keyboard or mouse action from going through
+    // TODO LATER: support ability to show more than one mask at a time (i.e. mask is not shared)
+
+    var defaultMaskElement,
+        defaultMinimumShowTime,
+        startShowTime,
+        delayedHideTimerId;
+
+    function setDefaults() {
+        var defaults;
+
+        // Gather options from the DOM.
+        defaults = uducada.jsfwk.getInterpretedDataValue('body', 'busy-mask-defaults') || {};
+        // Expects object with keys:
+        // - maskElement: CSS selector for element to use as busy mask
+        // - minimumShowTime: minimum #milliseconds to show the mask for
+        // TODO LATER: add showAfter option to show mask only after N ms has expired?
+        // TODO LATER: add hideAfter option to hide the mask after some time, in case there's an error somewhere and the UI would otherwise be unusable
+
+        // Get a reference to the mask element, if any.
+        defaultMaskElement = undefined === defaults.maskElement ? undefined : uducada.jsfwk.findInElement('body', defaults.maskElement);
+
+        // Mask should go away as soon as the job is done, so use default of 0.
+        defaultMinimumShowTime = defaults.minimumShowTime || 0;
+    }
+
+    function hideMask(elementToCover) {
+        if (defaultMaskElement) {
+            var endShowTime = new Date().getMilliseconds(),
+                diffTime = endShowTime - startShowTime;
+
+            if (diffTime < defaultMinimumShowTime) {
+                delayedHideTimerId = setTimeout(function () {
+                    uducada.uifwk.hide(defaultMaskElement);
+                    uducada.jsfwk.removeClassFromElement(elementToCover, 'uducada-busy');
+                }, defaultMinimumShowTime - diffTime);
+            } else {
+                uducada.uifwk.hide(defaultMaskElement);
+                uducada.jsfwk.removeClassFromElement(elementToCover, 'uducada-busy');
+            }
+        }
+    }
+
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function showMask(elementToCover) {
+        if (defaultMaskElement) {
+            // Clear the delayed hiding timer, if any.
+            if (undefined !== delayedHideTimerId) {
+                clearTimeout(delayedHideTimerId);
+                delayedHideTimerId = undefined;
+            }
+
+            uducada.jsfwk.addClassToElement(elementToCover, 'uducada-busy');
+            uducada.jsfwk.coverElementAndShow(defaultMaskElement, elementToCover);
+
+            startShowTime = new Date().getMilliseconds();
+        }
+    }
+
+    // Initialize default options.
+    setDefaults();
+
+    // Note: no skip-init here.
+
+    // Public functions.
+    return {
+        hide: hideMask,
+        show: showMask
+    };
+}());
 /* ========================================================================== */
 /* uducada - dialog.js - https://github.com/m5n/uducada                       */
 /* ========================================================================== */
 /* Support for dialogs.  No references to JS or UI frameworks here!           */
 /* ========================================================================== */
 
-// TODO LATER: allow override of global default on a per-dialog level
+// TODO LATER: allow override of global default on a per-dialog level, or set them all on a per-dialog level only?
 // TODO LATER: dialogs should be centered around some parent element; <body> by default.
 // TODO LATER: provide replacements for alert (default focus = OK button),
 //             confirm (default focus on OK button), and
@@ -453,11 +705,10 @@ uducada.dialog = (function () {
 /* Support for forms.  No references to JS or UI frameworks here!             */
 /* ========================================================================== */
 
-// TODO NOW: allow override of global default on a per-form level
+// TODO NOW: allow override of global default on a per-form level, or set them all on a per-form level only?
 // TODO NOW: what should data-required mean?  Shortcut for data-format and/or visual indicator and use format regex for messaging?
 // TODO NOW: required field indicator
 // TODO: value changed indicator
-// TODO: server-side error display (AJAX)
 // TODO LATER: placeholder support for older browsers
 
 /*global */
@@ -519,9 +770,16 @@ uducada.form = (function () {
         // have specific formats or min #char requirements to see the validation
         // message as soon as you start typing something.
         options.characterCountFieldCssSelector = '[data-show-character-count="true"]';
+        options.maxCharacterCountDataOption = 'max-character-count';
         // element: JS framework reference (not a DOM elt ref or a css selector)
-        options.getCharacterCountDisplayElementFunction = function (element) {
-            return uducada.jsfwk.findInParent(element, '.count-text .count');
+        options.getCharacterCountTypedDisplayElementFunction = function (inputElement) {
+            return uducada.jsfwk.findInParent(inputElement, '.count-text .count-typed');
+        };
+        options.getCharacterCountLeftDisplayElementFunction = function (inputElement) {
+            return uducada.jsfwk.findInParent(inputElement, '.count-text .count-left');
+        };
+        options.getCharacterCountLeft0DisplayElementFunction = function (inputElement) {
+            return uducada.jsfwk.findInParent(inputElement, '.count-text .count-left0');
         };
         // Support for validate-as-you-type.
         options.formatDataOption = 'format';
@@ -543,13 +801,14 @@ uducada.form = (function () {
         // Initialize this form.
         uducada.uifwk.initForm(formElement, options);
 
-        // Handle form submission event.
+        // Handle form submission event to do client-side validation.
         // event: JS framework reference to an event
         uducada.jsfwk.handle(formElement, 'submit', function (event) {
-            var allValid = true;
+            var allValid = true,
+                options;
 
             // Remove all previous messages, if any.
-            uducada.uifwk.hide('.required-text, .validation-text', formElement);
+            uducada.uifwk.hide('.required-text, .validation-text, .error-text, .generic-error-text', formElement);
             uducada.jsfwk.removeClassFromNestedElements(formElement, 'label', 'uducada-validation-failed');
 
             // Check required fields and format violations, but only surface
@@ -580,7 +839,17 @@ uducada.form = (function () {
                 }
             });
 
-            if (!allValid) {
+            if (allValid) {
+                // Prevent the default page-level form submit based on the HTML
+                // action and method attributes.
+                uducada.jsfwk.preventDefaultEventAction(event);
+
+                // Show busy mask.
+                uducada.busyMask.show(formElement);
+
+                options = uducada.jsfwk.getAttributeValues(formElement, ['action', 'method']);
+                uducada.jsfwk.makeAjaxRequest(formElement, options.method, options.action, uducada.uifwk.serializeForm(formElement), 'submit:success', 'submit:failure');
+            } else {
                 uducada.jsfwk.haltEventPropagation(event);
             }
 
@@ -588,6 +857,82 @@ uducada.form = (function () {
             // continue is definitely required in jQuery.  Maybe it's not
             // needed in other frameworks, but it doesn't hurt either.
             return allValid;
+        });
+
+        // Handle form submission success event.
+        // event: JS framework reference to an event
+        uducada.jsfwk.handle(formElement, 'submit:success', function () {
+            // Remove busy mask.
+            uducada.busyMask.hide(formElement);
+
+            // TODO: if this form is inside of a dialog, close the dialog? --> close-dialog-on-success option, default should be true (auto-close)
+        });
+
+        // Handle form submission failure event.
+        // event: JS framework reference to an event
+        uducada.jsfwk.handle(formElement, 'submit:failure', function (event, xhr) {
+            var data,
+                dd,
+                element,
+                handled = true;
+
+            // Remove busy mask.
+            uducada.busyMask.hide(formElement);
+
+            try {
+                // AJAX response should be a serialized JSON string of form:
+                // { fieldName1: errorMsg1, fieldName2: errorMsg2, ... }
+                // or a regular string indicating a non-field-specific error.
+                data = uducada.jsfwk.getAjaxResponseTextAsJson(xhr);
+                if (data) {
+                    for (dd in data) {
+                        if (data.hasOwnProperty(dd)) {
+                            element = uducada.jsfwk.findInParent(
+                                uducada.jsfwk.findInElement(formElement, '[name="' + dd + '"]'),
+                                'error-text'
+                            );
+                            if (!element) {
+                                // Create target element.
+                                element = uducada.jsfwk.createElement('span', {'class': 'error-text'});
+                                uducada.jsfwk.appendToParent(
+                                    element,
+                                    uducada.jsfwk.findInElement(formElement, '[name="' + dd + '"]')
+                                );
+                            }
+                            // Else target element already exists.
+                            uducada.jsfwk.setText(element, data[dd]);
+                            uducada.jsfwk.addClassToParent(element, 'uducada-server-error');
+                            uducada.uifwk.show(element);
+                        }
+                    }
+                } else {
+                    // Unexpected error / response not in a format that Uducada
+                    // understands; handle below.
+                    handled = false;
+                }
+            } catch (exception) {
+                data = uducada.jsfwk.getAjaxResponseTextAsString(xhr);
+                if (data && data.length > 0) {
+                    element = uducada.jsfwk.findInElement(formElement, '.error-text.uducada-server-error');
+                    if (!element) {
+                        // Create target element.
+                        element = uducada.jsfwk.createElement('span', {'class': 'error-text uducada-server-error'});
+                        uducada.jsfwk.insertBeforeNestedElement(element, formElement, '.generic-error-text');
+                    }
+                    // Else target element already exists.
+                    uducada.jsfwk.setText(element, data);
+                    uducada.uifwk.show(element);
+                } else {
+                    // Unexpected error / response not in a format that Uducada
+                    // understands; handle below.
+                    handled = false;
+                }
+            }
+
+            if (!handled) {
+                // Show user-defined generic error message.
+                uducada.uifwk.show(uducada.jsfwk.findInElement(formElement, '.generic-error-text'));
+            }
         });
     }
 

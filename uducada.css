@@ -22,16 +22,21 @@ textarea,
 .count-text,
 .instruction-text,
 .required-text,
-.validation-text {
+.validation-text
+.error-text {
     display: block;
 }
 
 .required-text,
-.validation-text {
+.validation-text,
+.error-text,
+.generic-error-text {
     display: none;
 }
 
 .uducada-validation-failed,
+.uducada-server-error,
+.generic-error-text,
 /* .count-text should be independent of general validation set on label element
    so that when user corrects input, failed color on .count-text disappears
    because of override below. */

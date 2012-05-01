@@ -21,8 +21,15 @@ Principles:
 - Widget config is done via standard and valid HTML attributes whenever possible
   or via custom data attributes or class values otherwise
 
+Author:
+- Maarten van Egmond
+
+Thanks:
+- For free images: http://preloaders.net/
+
 History:
-- April 21, 2012: Main form features
+- April 30, 2012: Main form features
+- April 29, 2012: Main busy mask features
 - April 16, 2012: Framework abstraction
 - April 14, 2012: Main dialog features
 - April 13, 2012: First checkin

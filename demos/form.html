@@ -19,46 +19,102 @@ label[for*="radio"],
 label[for*="checkbox"] {
     margin: 1em;
 }
+.busy-mask {
+    display: none;
+    text-align: center;
+    background: url(img/busy.gif) center center no-repeat;
+}
+.uducada-busy {
+    filter: alpha(opacity = 25);
+    opacity: 0.25;
+}
 
 
 </style>
 </head>
-<body>
+<body data-busy-mask-defaults='{"maskElement":".busy-mask","minimumShowTime":2500}'>   <!-- Note: the 2500 is just to illustrate the form submission for this demo, most likely you wouldn't want to use this option in a real application. -->
 
 <!-- Form that can be submitted by pressing Enter key in a single-line text
      field.  (By default, pressing Enter does not submit the form.) -->
-<form data-submit-on-enter="true">
+<form action="http://some/server/path" method="post"
+      data-submit-on-enter="true">
     <fieldset>
         <p>This form will submit when pressing the Enter key.</p>
 
         <label for="textfield-0">
             Basic single-line text input field:
-            <input type="text" id="textfield-0" placeholder="Enter text here">
+            <input type="text" name="textfield0" id="textfield-0" placeholder="Enter text here">
         </label>
 
         <button type="submit">Submit</button>
     </fieldset>
 </form>
 
-<form>
+<form id="sim1" action="http://some/server/path" method="post"
+      data-submit-on-enter="true">
+    <fieldset>
+        <p>Submitting this form simulates a field-specific server-side error.</p>
+
+        <label for="textfield-a">
+            Basic single-line text input field:
+            <input type="text" name="textfielda" id="textfield-a" placeholder="Enter text here">
+        </label>
+
+        <button type="submit">Submit</button>
+    </fieldset>
+</form>
+
+<form id="sim2" action="http://some/server/path" method="post"
+      data-submit-on-enter="true">
+    <fieldset>
+        <p class="generic-error-text">An unexpected error occurred.  (This unknown error message appears because the form submission fails and there's no server-side error coming back.  The message above is the simulated message triggered by the demo.)</p>
+
+        <p>Submitting this form simulates a generic (not field-specific) server-side error.</p>
+
+        <label for="textfield-b">
+            Basic single-line text input field:
+            <input type="text" name="textfieldb" id="textfield-b" placeholder="Enter text here">
+        </label>
+
+        <button type="submit">Submit</button>
+    </fieldset>
+</form>
+
+<form action="http://some/server/path" method="post"
+      data-submit-on-enter="true">
+    <fieldset>
+        <p class="generic-error-text">An unexpected error occurred.</p>
+
+        <p>Submitting this form simulates an unknown server-side error, making use of the generic error message in the markup.</p>
+
+        <label for="textfield-c">
+            Basic single-line text input field:
+            <input type="text" name="textfieldc" id="textfield-c" placeholder="Enter text here">
+        </label>
+
+        <button type="submit">Submit</button>
+    </fieldset>
+</form>
+
+<form action="http://some/server/path" method="post">
     <fieldset>
         <p>By default, forms will <em>not</em> submit when pressing the Enter key.
         This form shows some of the client-side validation capabilities.</p>
 
         <label for="textfield-1">
             Basic single-line text input field:
-            <input type="text" id="textfield-1" placeholder="Enter text here">
+            <input type="text" name="textfield1" id="textfield-1" placeholder="Enter text here">
         </label>
         <label for="textfield-2">
             Required field (via 'data-required' attribute):
-            <input type="text" id="textfield-2" placeholder="Enter text here"
+            <input type="text" name="textfield2" id="textfield-2" placeholder="Enter text here"
                    data-required="true">
             <span class="required-text">Input required</span>
             <!-- Note: no data-format here, so no validation-text needed. -->
         </label>
         <label for="textfield-3">
             Required field (via 'data-format' attribute):
-            <input type="text" id="textfield-3" placeholder="Enter text here"
+            <input type="text" name="textfield3" id="textfield-3" placeholder="Enter text here"
                    data-format="/./">
             <!-- Note: no data-required here, so no required-text needed. -->
             <span class="validation-text">Input required</span>
@@ -66,7 +122,7 @@ label[for*="checkbox"] {
         <label for="textfield-4">
             Required field, custom input format and instruction, different
             message for required input and validation failure:
-            <input type="text" id="textfield-4" placeholder="Enter text here"
+            <input type="text" name="textfield4" id="textfield-4" placeholder="Enter text here"
                    data-required="true"
                    data-format="/^\w*$/">
             <span class="instruction-text">Alphanumeric characters or underscores only</span>
@@ -75,7 +131,7 @@ label[for*="checkbox"] {
         </label>
         <label for="textfield-5">
             Maximum length (via 'maxlength' attribute--very rigorous as input field will not accept more than max characters):
-            <input type="text" id="textfield-5" placeholder="Enter text here"
+            <input type="text" name="textfield5" id="textfield-5" placeholder="Enter text here"
                    data-format="/^\w*$/"
                    maxlength="5">
             <span class="instruction-text">Alphanumeric characters or underscores only, no more than 5 total</span>
@@ -83,65 +139,80 @@ label[for*="checkbox"] {
         </label>
         <label for="textfield-6">
             Maximum length (via 'data-format' attribute--more user friendly as it allows massaging of input until it "fits" (e.g. for easy copy-and-paste); validation will catch if input length > max):
-            <input type="text" id="textfield-6" placeholder="Enter text here"
+            <input type="text" name="textfield6" id="textfield-6" placeholder="Enter text here"
                    data-format="/^\w{,5}$/">   <!-- Note: JavaScript does not support {,n} but uducada does. -->
             <span class="instruction-text">Alphanumeric characters or underscores only, no more than 5 total</span>
             <span class="validation-text">Input no more than 5 letters, numbers or underscores</span>
         </label>
         <label for="textfield-7">
             Minimum length (via 'data-format' attribute):
-            <input type="text" id="textfield-7" placeholder="Enter text here"
+            <input type="text" name="textfield7" id="textfield-7" placeholder="Enter text here"
                    data-format="/^\w{3,}$/">
             <span class="instruction-text">Alphanumeric characters or underscores only, 3 or more total</span>
             <span class="validation-text">Input at least 3 letters, numbers or underscores</span>
         </label>
         <label for="textfield-8">
             Minimum and maximum length (via 'data-format' attribute):
-            <input type="text" id="textfield-8" placeholder="Enter text here"
+            <input type="text" name="textfield8" id="textfield-8" placeholder="Enter text here"
                    data-format="/^\w{3,5}$/">
             <span class="instruction-text">Alphanumeric characters or underscores only, at least 3 but no more than 5 total</span>
             <span class="validation-text">Input between 3 and 5 letters, numbers or underscores</span>
         </label>
         <label for="textfield-9">
             Exact format (via 'data-format' attribute):
-            <input type="text" id="textfield-9" placeholder="####-####"
+            <input type="text" name="textfield9" id="textfield-9" placeholder="####-####"
                    data-format="/^(\d{4}-\d{4})?$/">   <!-- Note: no input is ok, but any input must follow the format. -->
             <span class="instruction-text">Enter account number using the format ####-####</span>
             <span class="validation-text">Numbers only, and in format ####-####</span>
         </label>
         <label for="textfield-10">
             Show character count (no validation or limits here):
-            <input type="text" id="textfield-10" placeholder="Enter text here"
+            <input type="text" name="textfield10" id="textfield-10" placeholder="Enter text here"
                    data-show-character-count="true">
-            <span class="count-text">You have typed <span class="count"></span> characters</span>
+            <span class="count-text">You have typed <span class="count-typed"></span> characters</span>
         </label>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
+</form>
 
+<form action="http://some/server/path" method="post">
     <fieldset>
         <label for="textarea-1">
             Multi-line text input field showing character count:
-            <textarea id="textarea-1" placeholder="Input lots of text here"
+            <textarea name="textarea1" id="textarea-1" placeholder="Input lots of text here"
                       data-show-character-count="true"
                       data-format="/^.{,100}$/"></textarea>   <!-- Note: don't use the 'm' flag here as it behaves differently than you think; uducada will apply regex to entire input as if it were a single line. -->
-            <span class="count-text"><span class="count"></span>/100</span>
+            <span class="count-text"><span class="count-typed"></span>/100</span>
             <span class="validation-text">Limit input to 100 characters max</span>
         </label>
 
         <label for="textarea-2">
             Multi-line text input field showing character count, with initial value:
-            <textarea id="textarea-2" placeholder="Input lots of text here"
+            <textarea name="textarea2" id="textarea-2" placeholder="Input lots of text here"
                       data-show-character-count="true"
                       data-format="/^.{,100}$/">Some default text here.
 The count should reflect that.</textarea>
-            <span class="count-text"><span class="count"></span>/100</span>
+            <span class="count-text"><span class="count-typed"></span>/100</span>
+            <span class="validation-text">Limit input to 100 characters max</span>
+        </label>
+
+        <label for="textarea-3">
+            Multi-line text input field showing remaining character count, with initial value:
+            <textarea name="textarea2" id="textarea-3" placeholder="Input lots of text here"
+                      data-show-character-count="true"
+                      data-max-character-count="100"
+                      data-format="/^.{,100}$/">Some default text here.
+The count should reflect that.</textarea>
+            <span class="count-text"><span class="count-typed"></span>/100 (left: <span class="count-left"></span>/100, left0: <span class="count-left0"></span>/100)</span>
             <span class="validation-text">Limit input to 100 characters max</span>
         </label>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
+</form>
 
+<form action="http://some/server/path" method="post">
     <fieldset>
         <label for="radio-button-1">
             <input name="radio-group" type="radio" id="radio-button-1">
@@ -158,7 +229,9 @@ The count should reflect that.</textarea>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
+</form>
 
+<form action="http://some/server/path" method="post">
     <fieldset>
         <label for="checkbox-1">
             <input name="checkbox-group" type="checkbox" id="checkbox-1">
@@ -177,6 +250,9 @@ The count should reflect that.</textarea>
     </fieldset>
 </form>
 
+<div class="busy-mask">
+    <p>Client-side validation successful. Now AJAX submit would occur.</p>
+</div>
 
 <!-- Your JavaScript framework of choice. -->
 <script src="../3pty/jquery/jquery.js"></script>
@@ -192,14 +268,18 @@ The count should reflect that.</textarea>
 
 
 /* Only needed for this demo; ignore this. */
-// Don't actually submit the form; w/o action and method, it'd in effect reload
-// the page and clear the form.
-$('form').submit(function () {
-    // TODO: simulate busy mask instead of alert.
-    alert('Client-side validation, if any, passed successfully.\nNow regular submit would follow.');
-    return false;
+$('form#sim1').submit(function (event) {
+    // Simulate sample server response.  The object mimics a jQuery XHR object.
+    $(this).trigger('submit:failure', [{
+        responseText: '{"textfielda":"This value already exists in the database"}'
+    }])
 });
-
+$('form#sim2').submit(function (event) {
+    // Simulate sample server response.  The object mimics a jQuery XHR object.
+    $(this).trigger('submit:failure', [{
+        responseText: 'Invalid character encoding'
+    }])
+});
 
 
 }(jQuery));
