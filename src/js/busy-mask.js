@@ -11,6 +11,7 @@ uducada.busyMask = (function () {
 
     // TODO LATER: busy mask should also prevent any keyboard or mouse action from going through
     // TODO LATER: support ability to show more than one mask at a time (i.e. mask is not shared)
+    // TODO: if mask ends up only being used with forms, make it a property of form
 
     var defaultMaskElement,
         defaultMinimumShowTime,

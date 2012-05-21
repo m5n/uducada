@@ -10,7 +10,7 @@ textarea,
 .count-text,
 .instruction-text,
 .required-text,
-.validation-text
+.validation-text,
 .error-text {
     display: block;
 }
@@ -35,5 +35,9 @@ textarea,
 .instruction-text,
 .count-text {
     font-size: smaller;
+    color: black;   /* Overrides label.uducada-validation-failed color. */
+}
+
+.uducada-validation-failed label {
     color: black;   /* Overrides label.uducada-validation-failed color. */
 }

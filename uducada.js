@@ -178,6 +178,10 @@ uducada.jsfwk = (function ($) {
         element.bind(eventType, fn);
     }
 
+    function hasClass(element, className) {
+        return element.hasClass(className);
+    }
+
     function insertBeforeNestedElement(newElement, parentElement, childCssSelector) {
         var element = parentElement.find(childCssSelector);
         if (element.length > 0) {
@@ -247,6 +251,7 @@ uducada.jsfwk = (function ($) {
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
         handle: handle,
+        hasClass: hasClass,
         insertBeforeNestedElement: insertBeforeNestedElement,
         makeAjaxRequest: makeAjaxRequest,
         preventDefaultEventAction: preventDefaultEventAction,
@@ -458,6 +463,7 @@ uducada.busyMask = (function () {
 
     // TODO LATER: busy mask should also prevent any keyboard or mouse action from going through
     // TODO LATER: support ability to show more than one mask at a time (i.e. mask is not shared)
+    // TODO: if mask ends up only being used with forms, make it a property of form
 
     var defaultMaskElement,
         defaultMinimumShowTime,
@@ -710,6 +716,7 @@ uducada.dialog = (function () {
 // TODO NOW: required field indicator
 // TODO: value changed indicator
 // TODO LATER: placeholder support for older browsers
+// TODO: support HTML5 tags + use html5shiv for older browsers
 
 /*global */
 var uducada = uducada || {};
@@ -809,31 +816,54 @@ uducada.form = (function () {
 
             // Remove all previous messages, if any.
             uducada.uifwk.hide('.required-text, .validation-text, .error-text, .generic-error-text', formElement);
-            uducada.jsfwk.removeClassFromNestedElements(formElement, 'label', 'uducada-validation-failed');
+            uducada.jsfwk.removeClassFromNestedElements(formElement, 'label, .input-group', 'uducada-validation-failed');
 
             // Check required fields and format violations, but only surface
             // one error per field max. (What's the use of flagging an invalid
             // format when a required field has no input?)
-            uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format]', function (inputElement) {
-                var msgElement, regex, format, valid = true;
+            uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format], [data-minimum-count], [data-maximum-count]', function (inputElement) {
+                var msgElement, regex, format, isGroup, min, max, count, valid = true;
 
-                if (uducada.jsfwk.getInterpretedDataValue(inputElement, 'required') &&
-                        !uducada.uifwk.getInput(inputElement)) {
-                    valid = false;
-                    msgElement = uducada.jsfwk.findInParent(inputElement, '.required-text');
-                } else {
-                    format = uducada.jsfwk.getInterpretedDataValue(inputElement, 'format');
-                    regex = getFormatRegex(format);
-                    if (format !== undefined) {
-                        if (!testInputValueAgainstRegex(uducada.uifwk.getInput(inputElement), regex)) {
+                isGroup = uducada.jsfwk.hasClass(inputElement, 'input-group');
+                if (isGroup) {
+                    count = (uducada.jsfwk.findInElement(inputElement, 'input:checked') || []).length;
+                    if (uducada.jsfwk.getInterpretedDataValue(inputElement, 'required') &&
+                            count === 0) {
+                        // One of the radio or checkbox inputs must be selected.
+                        valid = false;
+                        msgElement = uducada.jsfwk.findInElement(inputElement, '.required-text');
+                    } else {
+                        // Min/max count validation.
+                        min = uducada.jsfwk.getInterpretedDataValue(inputElement, 'minimum-count') || 0;
+                        max = uducada.jsfwk.getInterpretedDataValue(inputElement, 'maximum-count') || Number.MAX_VALUE;
+                        if (count < min || count > max) {
                             valid = false;
-                            msgElement = uducada.jsfwk.findInParent(inputElement, '.validation-text');
+                            msgElement = uducada.jsfwk.findInElement(inputElement, '.validation-text');
+                        }
+                    }
+                } else {
+                    if (uducada.jsfwk.getInterpretedDataValue(inputElement, 'required') &&
+                            !uducada.uifwk.getInput(inputElement)) {
+                        valid = false;
+                        msgElement = uducada.jsfwk.findInParent(inputElement, '.required-text');
+                    } else {
+                        format = uducada.jsfwk.getInterpretedDataValue(inputElement, 'format');
+                        regex = getFormatRegex(format);
+                        if (format !== undefined) {
+                            if (!testInputValueAgainstRegex(uducada.uifwk.getInput(inputElement), regex)) {
+                                valid = false;
+                                msgElement = uducada.jsfwk.findInParent(inputElement, '.validation-text');
+                            }
                         }
                     }
                 }
 
                 if (!valid) {
-                    uducada.jsfwk.addClassToParent(inputElement, 'uducada-validation-failed');
+                    if (isGroup) {
+                        uducada.jsfwk.addClassToElement(inputElement, 'uducada-validation-failed');
+                    } else {
+                        uducada.jsfwk.addClassToParent(inputElement, 'uducada-validation-failed');
+                    }
                     uducada.uifwk.show(msgElement);
                     allValid = false;
                 }

@@ -17,9 +17,12 @@ label, fieldset {
 }
 label[for*="radio"],
 label[for*="checkbox"] {
-    margin: 1em;
+    margin: 0.5em;
 }
-.busy-mask {
+fieldset div {
+    margin: 2em 0;
+}
+#busy-mask {
     display: none;
     text-align: center;
     background: url(img/busy.gif) center center no-repeat;
@@ -32,7 +35,7 @@ label[for*="checkbox"] {
 
 </style>
 </head>
-<body data-busy-mask-defaults='{"maskElement":".busy-mask","minimumShowTime":2500}'>   <!-- Note: the 2500 is just to illustrate the form submission for this demo, most likely you wouldn't want to use this option in a real application. -->
+<body data-busy-mask-defaults='{"maskElement":"#busy-mask","minimumShowTime":2500}'>   <!-- Note: the 2500 is just to illustrate the form submission for this demo, most likely you wouldn't want to use this option in a real application. -->
 
 <!-- Form that can be submitted by pressing Enter key in a single-line text
      field.  (By default, pressing Enter does not submit the form.) -->
@@ -213,44 +216,116 @@ The count should reflect that.</textarea>
 </form>
 
 <form action="http://some/server/path" method="post">
+    <!--
+        For a set of inputs, some container element is needed to "hold" the
+        validation items.  You can use any element, just make sure it has the
+        class "input-group".
+        Radio buttons have just one option: required or not.
+        There's no input format validation, so use required-text message.
+    -->
     <fieldset>
-        <label for="radio-button-1">
-            <input name="radio-group" type="radio" id="radio-button-1">
-            Radio button 1
-        </label>
-        <label for="radio-button-2">
-            <input name="radio-group" type="radio" id="radio-button-2">
-            Radio button 2
-        </label>
-        <label for="radio-button-3">
-            <input name="radio-group" type="radio" id="radio-button-3">
-            Radio button 3
-        </label>
+        <div class="input-group"
+             data-required="true">
+            Set of radio inputs; selection required:
+            <label for="radio-button-1">
+                <input name="radio-group" type="radio" id="radio-button-1">
+                Radio button 1
+            </label>
+            <label for="radio-button-2">
+                <input name="radio-group" type="radio" id="radio-button-2">
+                Radio button 2
+            </label>
+            <label for="radio-button-3">
+                <input name="radio-group" type="radio" id="radio-button-3">
+                Radio button 3
+            </label>
+            <span class="required-text">Selection required</span>
+        </div>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
 </form>
 
 <form action="http://some/server/path" method="post">
+    <!--
+        For a set of inputs, some container element is needed to "hold" the
+        validation items.  You can use any element, just make sure it has the
+        class "input-group".
+        Checkboxes have a few options: required or not, minimum and maximum
+        number of boxes checked.
+        Use required-text or validation-text message as needed.
+    -->
     <fieldset>
-        <label for="checkbox-1">
-            <input name="checkbox-group" type="checkbox" id="checkbox-1">
-            Checkbox 1
-        </label>
-        <label for="checkbox-2">
-            <input name="checkbox-group" type="checkbox" id="checkbox-2">
-            Checkbox 2
-        </label>
-        <label for="checkbox-3">
-            <input name="checkbox-group" type="checkbox" id="checkbox-3">
-            Checkbox 3
-        </label>
+        <div class="input-group"
+             data-required="true">
+            Set of checkboxes; selection required (via 'data-required' attribute):
+            <label for="checkbox-1">
+                <input name="checkbox-group" type="checkbox" id="checkbox-1">
+                Checkbox 1
+            </label>
+            <label for="checkbox-2">
+                <input name="checkbox-group" type="checkbox" id="checkbox-2">
+                Checkbox 2
+            </label>
+            <label for="checkbox-3">
+                <input name="checkbox-group" type="checkbox" id="checkbox-3">
+                Checkbox 3
+            </label>
+            <span class="required-text">Selection required</span>
+        </div>
+
+        <div class="input-group"
+             data-minimum-count="1">
+            Set of checkboxes; selection required (via 'data-minimum-count' attribute):
+            <label for="checkbox-4">
+                <input name="checkbox-group" type="checkbox" id="checkbox-4">
+                Checkbox 1
+            </label>
+            <label for="checkbox-5">
+                <input name="checkbox-group" type="checkbox" id="checkbox-5">
+                Checkbox 2
+            </label>
+            <label for="checkbox-6">
+                <input name="checkbox-group" type="checkbox" id="checkbox-6">
+                Checkbox 3
+            </label>
+            <span class="validation-text">Check at least one box</span>
+        </div>
+
+        <div class="input-group"
+             data-required="true"
+             data-minimum-count="2"
+             data-maximum-count="4">
+            Set of checkboxes; only between two and four selections allowed
+            <label for="checkbox-7">
+                <input name="checkbox-group" type="checkbox" id="checkbox-7">
+                Checkbox 1
+            </label>
+            <label for="checkbox-8">
+                <input name="checkbox-group" type="checkbox" id="checkbox-8">
+                Checkbox 2
+            </label>
+            <label for="checkbox-9">
+                <input name="checkbox-group" type="checkbox" id="checkbox-9">
+                Checkbox 3
+            </label>
+            <label for="checkbox-10">
+                <input name="checkbox-group" type="checkbox" id="checkbox-10">
+                Checkbox 4
+            </label>
+            <label for="checkbox-11">
+                <input name="checkbox-group" type="checkbox" id="checkbox-11">
+                Checkbox 5
+            </label>
+            <span class="required-text">Selection required</span>
+            <span class="validation-text">Check 2, 3 or 4 boxes</span>
+        </div>
 
         <button type="submit">Submit (trigger client-side validations)</button>
     </fieldset>
 </form>
 
-<div class="busy-mask">
+<div id="busy-mask">
     <p>Client-side validation successful. Now AJAX submit would occur.</p>
 </div>
 

@@ -177,6 +177,10 @@ uducada.jsfwk = (function ($) {
         element.bind(eventType, fn);
     }
 
+    function hasClass(element, className) {
+        return element.hasClass(className);
+    }
+
     function insertBeforeNestedElement(newElement, parentElement, childCssSelector) {
         var element = parentElement.find(childCssSelector);
         if (element.length > 0) {
@@ -246,6 +250,7 @@ uducada.jsfwk = (function ($) {
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
         handle: handle,
+        hasClass: hasClass,
         insertBeforeNestedElement: insertBeforeNestedElement,
         makeAjaxRequest: makeAjaxRequest,
         preventDefaultEventAction: preventDefaultEventAction,
