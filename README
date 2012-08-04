@@ -1,7 +1,7 @@
 uducada = UI Development Using Class and Data Attributes
 (Note: still a work in progress.)
 
-Uducada automates UI development via HTML attributes.  It removes the need to write JavaScript code for creating and hooking up widgets and needing to provide common user experience patterns.  Uducada takes care of all this for you.
+Uducada automates UI development via HTML attributes.  It removes the need to write JavaScript code for creating and initializing widgets as well as for common user experience patterns.  Uducada takes care of all this for you.
 
 By using specific markup, class attributes and data attributes, UI development is simplified and UI consistency is improved.  Widgets will become purely event driven and the only JavaScript needed will be to handle those events.
 
@@ -30,6 +30,7 @@ Thanks:
 - For free images: http://preloaders.net/
 
 History:
+- August 4, 2012: Build framework-specific uducada files
 - April 30, 2012: Main form features
 - April 29, 2012: Main busy mask features
 - April 16, 2012: Framework abstraction
