@@ -543,6 +543,7 @@ uducada.busyMask = (function () {
 // TODO LATER: provide replacements for alert (default focus = OK button),
 //             confirm (default focus on OK button), and
 //             prompt (where Enter triggers OK button)
+// TODO: keyboard navigation
 
 /*global */
 var uducada = uducada || {};

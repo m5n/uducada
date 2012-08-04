@@ -1,1 +1,0 @@
-adapters/jquery.adapter.js
