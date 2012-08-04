@@ -14,7 +14,7 @@ if [ "$JAVA" == "" ]; then echo "Not found: java" ; exit 1 ; fi
 echo "/* uducada v$VERSION - https://github.com/m5n/uducada */" > ./version.tmp
 
 # Process CSS files for each third-party UI framework.
-UIFWKFILES=`find ./src/css/adapters -type f`
+UIFWKFILES=`find ./src/css/adapters/uifwk -type f`
 for UIFWKFILE in $UIFWKFILES
 do
     # Extract framework identifier.
