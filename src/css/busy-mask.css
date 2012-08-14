@@ -5,6 +5,6 @@
 /* ========================================================================== */
 
 .uducada-busy {
-    filter: alpha(opacity = 25);
+    filter: alpha(opacity = 25);   /* TODO: remove and add to legacy-browser.css as a separate include? */
     opacity: 0.25;
 }
