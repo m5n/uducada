@@ -28,6 +28,7 @@ uducada.busyMask = (function () {
         // - minimumShowTime: minimum #milliseconds to show the mask for
         // TODO LATER: add showAfter option to show mask only after N ms has expired?
         // TODO LATER: add hideAfter option to hide the mask after some time, in case there's an error somewhere and the UI would otherwise be unusable
+        //             or, show X icon after some time, or a cancel/close equivalent
 
         // Get a reference to the mask element, if any.
         defaultMaskElement = undefined === defaults.maskElement ? undefined : uducada.jsfwk.findInElement('body', defaults.maskElement);

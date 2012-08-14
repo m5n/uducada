@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada            */
+/* uducada - jquery-ui.js - https://github.com/m5n/uducada                    */
 /* ========================================================================== */
 /* All jQuery UI specific code.  No callbacks to uducada objects from here    */
 /* and no hardcoded uducada specific attribute names or CSS selectors.        */
@@ -24,7 +24,7 @@ uducada.uifwk = (function ($) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
             // Must pass back the dialog element and the button event type.
-            triggerFn(dialogElement, cancelButtonEventType);
+            triggerFn(dialogElement, cancelButtonEventType, true);
         }
     }
 
@@ -176,13 +176,34 @@ uducada.uifwk = (function ($) {
         element.hide();
     }
 
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function toggle(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.toggle();
+    }
+
+    function toggleDialog(element) {
+        if (element.is(':visible')) {
+            element.dialog('close');
+        } else {
+            element.dialog('open');
+        }
+    }
+
     // Public functions.
     return {
         getInput: getInput,
         hide: hide,
         initDialog: initDialog,
         initForm: initForm,
+        toggleDialog: toggleDialog,
         serializeForm: serializeForm,
-        show: show
+        show: show,
+        toggle: toggle
     };
 }(jQuery));

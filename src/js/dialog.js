@@ -24,7 +24,13 @@ uducada.dialog = (function () {
 
     // Trigger a specific button event on the dialog element, making the button
     // event type easily accessible.
-    function triggerEvent(dialogElement, buttonEventType) {
+    function triggerEvent(dialogElement, buttonEventType, dialogAlreadyClosed) {
+        // TODO: validate form if there's one in the dialog.  If error, don't auto-close dialog.
+
+        if (!dialogAlreadyClosed) {
+            uducada.uifwk.toggleDialog(dialogElement);
+        }
+
         uducada.jsfwk.trigger(dialogElement, 'button:' + buttonEventType, [ buttonEventType ]);
     }
 

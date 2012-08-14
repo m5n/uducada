@@ -1,0 +1,12 @@
+Widgets:
+- autocomplete
+- all/none master checkbox
+
+Support:
+- i18n
+- check scores yslow/pagespeed
+- ie css limit support (< 32 files, < 4096 rules)
+- 1-page sites
+- loading priority
+- container event handling (trigger, receive, broadcast, ignore)
+- easy tables / column layouts

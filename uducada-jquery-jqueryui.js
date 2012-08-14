@@ -1,6 +1,6 @@
 /* uducada v0.1 - https://github.com/m5n/uducada */
 /* ========================================================================== */
-/* uducada - jquery.adapter.js - https://github.com/m5n/uducada               */
+/* uducada - jquery.js - https://github.com/m5n/uducada                       */
 /* ========================================================================== */
 /* All jQuery specific code.  No callbacks to uducada objects from here and   */
 /* no hardcoded uducada specific attribute names or CSS selectors.            */
@@ -168,6 +168,15 @@ uducada.jsfwk = (function ($) {
         return result;
     }
 
+    // Retrieves a single data attribute on the given element or CSS selector,
+    // converting the string value to the right data type (number, boolean,
+    // object (via JSON conversion)).
+    // element: JS framework reference or CSS selector (not a DOM element reference)
+    function getElementsByDataValue(element, key) {
+        var cssSelector = getInterpretedDataValue(element, key);
+        return $(cssSelector);
+    }
+
     // event: JS framework reference to an event
     function haltEventPropagation(event) {
         event.stopImmediatePropagation();
@@ -228,7 +237,7 @@ uducada.jsfwk = (function ($) {
     // element: JS framework reference (not a DOM elt ref or a css selector)
     // eventOptions: an array.
     function trigger(element, eventType, eventOptions) {
-        $(element).trigger(eventType, eventOptions);
+        element.trigger(eventType, eventOptions);
     }
 
     // Public functions.
@@ -247,6 +256,7 @@ uducada.jsfwk = (function ($) {
         getAjaxResponseTextAsJson: getAjaxResponseTextAsJson,
         getAjaxResponseTextAsString: getAjaxResponseTextAsString,
         getAttributeValues: getAttributeValues,
+        getElementsByDataValue: getElementsByDataValue,
         getInterpretedDataValue: getInterpretedDataValue,
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
@@ -263,7 +273,7 @@ uducada.jsfwk = (function ($) {
     };
 }(jQuery));
 /* ========================================================================== */
-/* uducada - jquery-ui.adapter.js - https://github.com/m5n/uducada            */
+/* uducada - jquery-ui.js - https://github.com/m5n/uducada                    */
 /* ========================================================================== */
 /* All jQuery UI specific code.  No callbacks to uducada objects from here    */
 /* and no hardcoded uducada specific attribute names or CSS selectors.        */
@@ -288,7 +298,7 @@ uducada.uifwk = (function ($) {
         if ($(event.srcElement).hasClass('ui-icon-closethick') ||   // Close icon (the 'x') at top-right.
                 event.keyCode === $.ui.keyCode.ESCAPE) {            // Escape key.
             // Must pass back the dialog element and the button event type.
-            triggerFn(dialogElement, cancelButtonEventType);
+            triggerFn(dialogElement, cancelButtonEventType, true);
         }
     }
 
@@ -440,14 +450,35 @@ uducada.uifwk = (function ($) {
         element.hide();
     }
 
+    // element: JS framework reference (not a DOM elt ref or a css selector) or CSS selector
+    // parentElement: if element is a CSS selector, this is an optional parent element to find matches in
+    function toggle(element, parentElement) {
+        if (typeof element === 'string') {
+            // CSS selector so convert to JS framework object.
+            element = $(element, parentElement);
+        }
+
+        element.toggle();
+    }
+
+    function toggleDialog(element) {
+        if (element.is(':visible')) {
+            element.dialog('close');
+        } else {
+            element.dialog('open');
+        }
+    }
+
     // Public functions.
     return {
         getInput: getInput,
         hide: hide,
         initDialog: initDialog,
         initForm: initForm,
+        toggleDialog: toggleDialog,
         serializeForm: serializeForm,
-        show: show
+        show: show,
+        toggle: toggle
     };
 }(jQuery));
 /* ========================================================================== */
@@ -480,6 +511,7 @@ uducada.busyMask = (function () {
         // - minimumShowTime: minimum #milliseconds to show the mask for
         // TODO LATER: add showAfter option to show mask only after N ms has expired?
         // TODO LATER: add hideAfter option to hide the mask after some time, in case there's an error somewhere and the UI would otherwise be unusable
+        //             or, show X icon after some time, or a cancel/close equivalent
 
         // Get a reference to the mask element, if any.
         defaultMaskElement = undefined === defaults.maskElement ? undefined : uducada.jsfwk.findInElement('body', defaults.maskElement);
@@ -533,6 +565,42 @@ uducada.busyMask = (function () {
     };
 }());
 /* ========================================================================== */
+/* uducada - click-toggle.js - https://github.com/m5n/uducada                 */
+/* ========================================================================== */
+/* Support for click toggles.  No references to JS or UI frameworks here!     */
+/* A "click toggle" is an element that can trigger a click event (like an     */
+/* anchor or a button) and result in another element being shown or hidden,   */
+/* that is: "toggled".                                                        */
+/* ========================================================================== */
+
+/*global */
+var uducada = uducada || {};
+uducada.dialog = (function () {
+    'use strict';
+
+    // Initialize a single click toggle instance.
+    // element: JS framework reference (not a DOM elt ref or a css selector)
+    function initializeClickToggle(element) {
+        uducada.jsfwk.handle(element, 'click', function () {
+            var targetElement = uducada.jsfwk.getElementsByDataValue(element, 'click-toggle');
+            if (uducada.jsfwk.hasClass(targetElement, 'dialog')) {
+                uducada.uifwk.toggleDialog(targetElement);
+            } else {
+                uducada.uifwk.toggle(targetElement);
+            }
+        });
+    }
+
+    // Initialize all click toggles present in the markup, except those that
+    // indicate to skip initialization.
+    uducada.jsfwk.callFunctionForElementsIfDataValueIsNot('[data-click-toggle]', 'skip-init', true, initializeClickToggle);
+
+    // Public functions.
+    return {
+        init: initializeClickToggle
+    };
+}());
+/* ========================================================================== */
 /* uducada - dialog.js - https://github.com/m5n/uducada                       */
 /* ========================================================================== */
 /* Support for dialogs.  No references to JS or UI frameworks here!           */
@@ -558,7 +626,13 @@ uducada.dialog = (function () {
 
     // Trigger a specific button event on the dialog element, making the button
     // event type easily accessible.
-    function triggerEvent(dialogElement, buttonEventType) {
+    function triggerEvent(dialogElement, buttonEventType, dialogAlreadyClosed) {
+        // TODO: validate form if there's one in the dialog.  If error, don't auto-close dialog.
+
+        if (!dialogAlreadyClosed) {
+            uducada.uifwk.toggleDialog(dialogElement);
+        }
+
         uducada.jsfwk.trigger(dialogElement, 'button:' + buttonEventType, [ buttonEventType ]);
     }
 

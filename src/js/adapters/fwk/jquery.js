@@ -1,5 +1,5 @@
 /* ========================================================================== */
-/* uducada - jquery.adapter.js - https://github.com/m5n/uducada               */
+/* uducada - jquery.js - https://github.com/m5n/uducada                       */
 /* ========================================================================== */
 /* All jQuery specific code.  No callbacks to uducada objects from here and   */
 /* no hardcoded uducada specific attribute names or CSS selectors.            */
@@ -167,6 +167,15 @@ uducada.jsfwk = (function ($) {
         return result;
     }
 
+    // Retrieves a single data attribute on the given element or CSS selector,
+    // converting the string value to the right data type (number, boolean,
+    // object (via JSON conversion)).
+    // element: JS framework reference or CSS selector (not a DOM element reference)
+    function getElementsByDataValue(element, key) {
+        var cssSelector = getInterpretedDataValue(element, key);
+        return $(cssSelector);
+    }
+
     // event: JS framework reference to an event
     function haltEventPropagation(event) {
         event.stopImmediatePropagation();
@@ -227,7 +236,7 @@ uducada.jsfwk = (function ($) {
     // element: JS framework reference (not a DOM elt ref or a css selector)
     // eventOptions: an array.
     function trigger(element, eventType, eventOptions) {
-        $(element).trigger(eventType, eventOptions);
+        element.trigger(eventType, eventOptions);
     }
 
     // Public functions.
@@ -246,6 +255,7 @@ uducada.jsfwk = (function ($) {
         getAjaxResponseTextAsJson: getAjaxResponseTextAsJson,
         getAjaxResponseTextAsString: getAjaxResponseTextAsString,
         getAttributeValues: getAttributeValues,
+        getElementsByDataValue: getElementsByDataValue,
         getInterpretedDataValue: getInterpretedDataValue,
         getInterpretedDataValues: getInterpretedDataValues,
         haltEventPropagation: haltEventPropagation,
