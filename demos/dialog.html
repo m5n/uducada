@@ -95,12 +95,12 @@
 
 <!-- Only needed for this demo; ignore this. -->
 <div id="demo-controls">
-    <button data-click-toggle="#basic-dialog">Show basic dialog</button>
-    <button data-click-toggle="#common-dialog">Show common dialog</button>
-    <button data-click-toggle="#common-dialog-no-escape">Show common dialog w/o escape</button>
-    <button data-click-toggle="#default-button-text-dialog">Show default button text dialog</button>
-    <button data-click-toggle="#customized-dialog">Show customized dialog</button>
-    <button data-click-toggle="#delayed-init-dialog">Show delayed init dialog</button>
+    <button data-toggle="#basic-dialog">Show basic dialog</button>
+    <button data-toggle="#common-dialog">Show common dialog</button>
+    <button data-toggle="#common-dialog-no-escape">Show common dialog w/o escape</button>
+    <button data-toggle="#default-button-text-dialog">Show default button text dialog</button>
+    <button data-toggle="#customized-dialog">Show customized dialog</button>
+    <button data-toggle="#delayed-init-dialog">Show delayed init dialog</button>
     <div id="console"></div>
     <div id="console-output-template"><p>{id}: user indicated {type}</p></div>
 </div>
@@ -140,7 +140,7 @@ $('#basic-dialog').dialog('option', 'position', 'bottom');
 // hidden initially and by design there's no support for a data-show attribute.
 // If you do want to show a dialog initially (i.e. on page load), use the API
 // of the UI framework you chose to use.  Here we used jQuery UI, so:
-$('[data-click-toggle="#basic-dialog"]').click();
+$('[data-toggle="#basic-dialog"]').click();
 
 // If a dialog is not immediately needed, it may make sense to not initialize
 // it until later.  Use the 'data-skip-init' flag and init it manually.
