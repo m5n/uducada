@@ -7,17 +7,40 @@
 /* ========================================================================== */
 
 // TODO: data-show-text / data-hide-text
-// TODO: data-event (default click)
 
 /*global */
 var uducada = uducada || {};
 uducada.toggle = (function () {
     'use strict';
 
+    var defaultEvent;
+
+    function setDefaults() {
+        var defaults;
+
+        // Gather options from the DOM.
+        defaults = uducada.jsfwk.getInterpretedDataValue('body', 'toggle-defaults') || {};
+        // Expects object with keys:
+        // - event: JS framework-specific event string
+
+        // Toggles usually require a user action and the most basic is 'click'.
+        defaultEvent = undefined === defaults.event ? 'click' : defaults.event;
+    }
+
     // Initialize a single toggle instance.
     // element: JS framework reference (not a DOM elt ref or a css selector)
     function initializeToggle(element) {
-        uducada.jsfwk.handle(element, 'click', function () {
+        var options;
+
+        // Gather options from the DOM.
+        options = uducada.jsfwk.getInterpretedDataValues(element, [
+            'event'
+        ]);
+
+        // Use default event value if needed.
+        options.event = options.event || defaultEvent;
+
+        uducada.jsfwk.handle(element, options.event, function () {
             var targetElement = uducada.jsfwk.getElementsByDataValue(element, 'toggle');
             if (uducada.jsfwk.hasClass(targetElement, 'dialog')) {
                 uducada.uifwk.toggleDialog(targetElement);
@@ -26,6 +49,9 @@ uducada.toggle = (function () {
             }
         });
     }
+
+    // Initialize default options.
+    setDefaults();
 
     // Initialize all click toggles present in the markup, except those that
     // indicate to skip initialization.

@@ -15,11 +15,17 @@
     display: none;
 }
 .msg-1 {
-    width: 20em;   /* To force wrapping of the text. */
+    width: 21em;   /* To force wrapping of the text. */
 }
 .msg-1 a {
     font-size: smaller;
     color: red;
+}
+#tooltip {
+    background: yellow;
+    border: 1px solid black;
+    padding: 0.5em;
+    position: absolute;   /* Adjusts width to match content width. */
 }
 
 
@@ -30,7 +36,7 @@
 
 <!-- Toggle content. -->
 <div>
-    <button data-toggle="span">Toggle text</button>
+    <button data-toggle="span">Toggle text via click</button>
     <span class="hidden">Some initially hidden text...</span>
 </div>
 
@@ -40,7 +46,13 @@
      data-title="Basic dialog">
     <p>This is a dialog.</p>
 </div>
-<button data-toggle="#basic-dialog">Toggle dialog</button>
+<button data-toggle="#basic-dialog">Toggle dialog via click</button>
+
+<!-- Toggle content on-hover instead of the default click. -->
+<div>
+    <span data-toggle="#tooltip" data-event="hover">Toggle tooltip via hover</span>
+    <div id="tooltip" class="hidden">Other initially hidden text...</div>
+</div>
 
 <!-- Use the same class name to easily toggle between "preview" and "full" views. -->
 <p class="msg-1">Here's the first sentence of a message. <a data-toggle=".msg-1">[More]</a></p>
