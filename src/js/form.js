@@ -69,8 +69,8 @@ uducada.form = (function () {
         // Note: don't do this in general because it's annoying for fields that
         // have specific formats or min #char requirements to see the validation
         // message as soon as you start typing something.
-        options.characterCountFieldCssSelector = '[data-show-character-count="true"]';
-        options.maxCharacterCountDataOption = 'max-character-count';
+        options.characterCountFieldCssSelector = '[data-show-char-count="true"]';
+        options.maxCharacterCountDataOption = 'max-char-count';
         // element: JS framework reference (not a DOM elt ref or a css selector)
         options.getCharacterCountTypedDisplayElementFunction = function (inputElement) {
             return uducada.jsfwk.findInParent(inputElement, '.count-text .count-typed');
@@ -114,7 +114,7 @@ uducada.form = (function () {
             // Check required fields and format violations, but only surface
             // one error per field max. (What's the use of flagging an invalid
             // format when a required field has no input?)
-            uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format], [data-minimum-count], [data-maximum-count]', function (inputElement) {
+            uducada.jsfwk.callFunctionForNestedElements(formElement, '[data-required="true"], [data-format], [data-min-count], [data-max-count]', function (inputElement) {
                 var msgElement, regex, format, isGroup, min, max, count, valid = true;
 
                 isGroup = uducada.jsfwk.hasClass(inputElement, 'input-group');
@@ -127,8 +127,8 @@ uducada.form = (function () {
                         msgElement = uducada.jsfwk.findInElement(inputElement, '.required-text');
                     } else {
                         // Min/max count validation.
-                        min = uducada.jsfwk.getInterpretedDataValue(inputElement, 'minimum-count') || 0;
-                        max = uducada.jsfwk.getInterpretedDataValue(inputElement, 'maximum-count') || Number.MAX_VALUE;
+                        min = uducada.jsfwk.getInterpretedDataValue(inputElement, 'min-count') || 0;
+                        max = uducada.jsfwk.getInterpretedDataValue(inputElement, 'max-count') || Number.MAX_VALUE;
                         if (count < min || count > max) {
                             valid = false;
                             msgElement = uducada.jsfwk.findInElement(inputElement, '.validation-text');

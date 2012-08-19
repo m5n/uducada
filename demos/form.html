@@ -167,7 +167,7 @@ fieldset div {
         <label for="textfield-10">
             Show character count (no validation or limits here):
             <input type="text" name="textfield10" id="textfield-10" placeholder="Enter text here"
-                   data-show-character-count="true">
+                   data-show-char-count="true">
             <span class="count-text">You have typed <span class="count-typed"></span> characters</span>
         </label>
 
@@ -180,7 +180,7 @@ fieldset div {
         <label for="textarea-1">
             Multi-line text input field showing character count:
             <textarea name="textarea1" id="textarea-1" placeholder="Input lots of text here"
-                      data-show-character-count="true"
+                      data-show-char-count="true"
                       data-format="/^.{,100}$/"></textarea>   <!-- Note: don't use the 'm' flag here as it behaves differently than you think; uducada will apply regex to entire input as if it were a single line. -->
             <span class="count-text"><span class="count-typed"></span>/100</span>
             <span class="validation-text">Limit input to 100 characters max</span>
@@ -189,7 +189,7 @@ fieldset div {
         <label for="textarea-2">
             Multi-line text input field showing character count, with initial value:
             <textarea name="textarea2" id="textarea-2" placeholder="Input lots of text here"
-                      data-show-character-count="true"
+                      data-show-char-count="true"
                       data-format="/^.{,100}$/">Some default text here.
 The count should reflect that.</textarea>
             <span class="count-text"><span class="count-typed"></span>/100</span>
@@ -199,8 +199,8 @@ The count should reflect that.</textarea>
         <label for="textarea-3">
             Multi-line text input field showing remaining character count, with initial value:
             <textarea name="textarea2" id="textarea-3" placeholder="Input lots of text here"
-                      data-show-character-count="true"
-                      data-max-character-count="100"
+                      data-show-char-count="true"
+                      data-max-char-count="100"
                       data-format="/^.{,100}$/">Some default text here.
 The count should reflect that.</textarea>
             <span class="count-text"><span class="count-typed"></span>/100 (left: <span class="count-left"></span>/100, left0: <span class="count-left0"></span>/100)</span>
@@ -284,8 +284,8 @@ The count should reflect that.</textarea>
         </div>
 
         <div class="input-group"
-             data-minimum-count="1">
-            Set of checkboxes; selection required (via 'data-minimum-count' attribute):
+             data-min-count="1">
+            Set of checkboxes; selection required (via 'data-min-count' attribute):
             <label for="checkbox-4">
                 <input name="checkbox-group" type="checkbox" id="checkbox-4">
                 Checkbox 1
@@ -303,8 +303,8 @@ The count should reflect that.</textarea>
 
         <div class="input-group"
              data-required="true"
-             data-minimum-count="2"
-             data-maximum-count="4">
+             data-min-count="2"
+             data-max-count="4">
             Set of checkboxes; only between two and four selections allowed
             <label for="checkbox-7">
                 <input name="checkbox-group" type="checkbox" id="checkbox-7">
@@ -353,16 +353,24 @@ The count should reflect that.</textarea>
 
 /* Only needed for this demo; ignore this. */
 $('form#sim1').submit(function (event) {
-    // Simulate sample server response.  The object mimics a jQuery XHR object.
-    $(this).trigger('submit:failure', [{
-        responseText: '{"textfielda":"This value already exists in the database"}'
-    }]);
+    var self = this;
+
+    setTimeout(function () {
+        // Simulate sample server response.  The object mimics a jQuery XHR object.
+        $(self).trigger('submit:failure', [{
+            responseText: '{"textfielda":"This value already exists in the database"}'
+        }]);
+    }, 2500);   // Same value as minimumShowTime busy mask default.
 });
 $('form#sim2').submit(function (event) {
-    // Simulate sample server response.  The object mimics a jQuery XHR object.
-    $(this).trigger('submit:failure', [{
-        responseText: 'Invalid character encoding'
-    }]);
+    var self = this;
+
+    setTimeout(function () {
+        // Simulate sample server response.  The object mimics a jQuery XHR object.
+        $(self).trigger('submit:failure', [{
+            responseText: 'Invalid character encoding'
+        }]);
+    }, 2500);   // Same value as minimumShowTime busy mask default.
 });
 
 
