@@ -11,17 +11,7 @@ Although uducada relies on third-party libraries to provide UI widgets, these li
 
 A uducada JavaScript object is available for advanced features, but for the common case user interactions, there's no additional JavaScript library to learn.
 
-See Wiki for complete feature and usage information.
-
-Principles:
-- Abstract external JS and UI frameworks so that any framework can be used
-- Support delayed initialization of widgets
-- CSS and JS go in external files, never inline or nested within the HTML
-  (the included demos violate only this principle as their purpose is educational)
-- <link> tags go in the <head>, <script> tags go just before </body>
-- User-facing strings go in HTML, never in CSS or JS
-- Widget config is done via standard and valid HTML attributes whenever possible
-  or via custom data attributes or class values otherwise
+See Wiki for complete feature and usage information: https://github.com/m5n/uducada/wiki
 
 Author:
 - Maarten van Egmond
